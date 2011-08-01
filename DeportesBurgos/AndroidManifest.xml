@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+      package="com.mlopez"
+      android:versionCode="1"
+      android:versionName="1.0">
+    <uses-sdk android:minSdkVersion="8" />
+
+    <application android:icon="@drawable/deportesicon" android:label="@string/app_name" >
+        <activity android:name=".DeportesBurgosActivity"
+                  android:label="@string/app_name">
+            <intent-filter>
+                <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+
+		<activity android:name=".SearchResultsActivity" android:label="@string/searchresults">
+        </activity>
+        
+        <activity android:name=".AcercaDeActivity" android:label="@string/acercade">
+        </activity>
+        
+        <activity android:name=".PreferencesFromXml" android:label="@string/preferences" >
+        </activity>
+
+    </application>
+    
+    <uses-permission android:name="android.permission.INTERNET" />
+    
+</manifest>

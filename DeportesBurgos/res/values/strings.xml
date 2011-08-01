@@ -1,0 +1,13 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Deportes Burgos</string>
+    <string name="reserva">Reserva de instalaciones</string>
+    <string name="formActivity">Actividad</string>
+    <string name="formComplejo">Lugar</string>
+    <string name="formDia">Dia</string>
+    <string name="search">Buscar</string>
+    <string name="searchresults">Resultado de búsqueda</string>
+    <string name="acercade">Acerca de</string>
+    <string name="preferences">Ajustes</string>
+    
+</resources>

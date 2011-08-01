@@ -1,0 +1,4 @@
+
+- Centrar los textos de las cabeceras
+- Meter las propiedades para usuario y contraseña.
+- Forma más sencilla de meter las instalaciones de cada deporte.
