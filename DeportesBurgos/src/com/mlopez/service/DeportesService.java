@@ -19,6 +19,7 @@ import android.text.method.TextKeyListener.Capitalize;
 
 import com.mlopez.beans.Deporte;
 import com.mlopez.beans.Hora;
+import com.mlopez.beans.InfoReserva;
 import com.mlopez.beans.Lugar;
 import com.mlopez.beans.Pista;
 
@@ -61,10 +62,8 @@ public class DeportesService {
 		}
 		throw new DeportesServiceException("No se ha recibido la cookie del servidor");
 	}
-		
-
-
-	public static List<Pista> parseResponse (String result){
+	
+	public static List<Pista> parseResponse (String result, String fecha, String deporteCode){
 		List<Pista> pistas = new ArrayList<Pista>();
 
 		//El separador va a ser el string <td class="tddatos"
@@ -109,7 +108,11 @@ public class DeportesService {
 					token = token.substring(token.indexOf('>')+1);
 					int nextHoraIndexOf = token.indexOf("</td>");
 					String horaString = token.substring(0, nextHoraIndexOf);
-					pista.addHora(new Hora(horaString, disponibilidad));
+					Hora hora = new Hora(horaString, disponibilidad);
+					hora.setFecha(fecha);
+					hora.setDeporteCode(deporteCode);
+					hora.setPosition(pista.getHoras().size()+1);
+					pista.addHora(hora);
 					horaIndex = token.indexOf(horaDelim);
 				}
 				pistas.add(pista);
@@ -146,7 +149,7 @@ public class DeportesService {
 			throw new DeportesServiceException("Error al conectar con el servidor", t);
 		}
 		try{
-			lastSearchResultsPistas = parseResponse(response);
+			lastSearchResultsPistas = parseResponse(response, day, activity);
 		}catch (Throwable t){
 			throw new DeportesServiceException("Error al procesar la respuesta del servidor", t);
 		}
@@ -191,6 +194,15 @@ public class DeportesService {
 		}
 		return fechas;
 	}
+	
+	public static InfoReserva getInfoReserva (Hora hora){
+		InfoReserva reserva = new InfoReserva();
+		//POST /deporteson/reservainstalacion.php HTTP/1.1
+		//inst=SASQ0100&posicion=8&fecha=02%2F08%2F2011&tam=0&numaut=&apli=&tipinst=&nocache=0.08210459491237998
+
+		//<respuesta><importe>3.80</importe><suple1>2.10</suple1><suple2>0.00</suple2><suple3>0.00</suple3><suple4>0.00</suple4><suple5>0.00</suple5><tope>0</tope><tipv>1</tipv><bon><b><bono>0</bono><bs1>0</bs1><bs2>0</bs2><bs3>0</bs3><bs4>0</bs4><bs5>0</bs5></b></bon></respuesta>
+		return reserva;
+	}
 
 	private static void initDeportesYLugares (){
 		lugares = new ArrayList<Lugar>();
@@ -230,9 +242,6 @@ public class DeportesService {
 		lugares.add(ptvoPisones);
 		
 		deportes = new ArrayList<Deporte>();
-		Deporte deporteTodos = new Deporte("todos", "Todos");
-		deporteTodos.setLugares(lugares);	
-		deportes.add(deporteTodos);
 		
 		Deporte boxeo = new Deporte(" BX", "Boxeo");
 		boxeo.addLugar(todos);

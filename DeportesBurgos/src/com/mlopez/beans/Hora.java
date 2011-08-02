@@ -4,6 +4,9 @@ public class Hora {
 
 	private String hora;
 	private String disp;
+	private String fecha;
+	private String deporteCode;
+	private int position;
 	
 	public Hora(String hora, String disp) {
 		this.hora = hora.replaceAll("&nbsp;", "");
@@ -33,5 +36,30 @@ public class Hora {
 	public boolean isVisible () {
 		return !"azul".equals(disp);
 	}
+
+	public String getDeporteCode() {
+		return deporteCode;
+	}
+
+	public void setDeporteCode(String deporteCode) {
+		this.deporteCode = deporteCode;
+	}
+
+	public int getPosition() {
+		return position;
+	}
+
+	public void setPosition(int position) {
+		this.position = position;
+	}
+
+	public String getFecha() {
+		return fecha;
+	}
+
+	public void setFecha(String fecha) {
+		this.fecha = fecha;
+	}
+	
 	
 }

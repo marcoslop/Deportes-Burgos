@@ -2,6 +2,9 @@ package com.mlopez;
 
 import java.util.List;
 
+import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
@@ -20,12 +23,16 @@ import android.widget.Toast;
 import com.mlopez.beans.Hora;
 import com.mlopez.beans.Pista;
 import com.mlopez.service.DeportesService;
+import com.mlopez.service.PreferencesService;
 
 public class SearchResultsActivity extends AbstractActivity implements OnClickListener{
 
+	private Activity mainContent = null;
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		mainContent = this;
 		setContentView(R.layout.results);
 		
 		TableLayout layout = (TableLayout)findViewById(R.id.tLayout);
@@ -92,30 +99,28 @@ public class SearchResultsActivity extends AbstractActivity implements OnClickLi
 
 	@Override
 	public void onClick(View arg0) {
-		Toast.makeText(this, "Reserva de instalaciones no implementado todavia. Habrá que esperar a la siguiente versión", Toast.LENGTH_LONG).show();
-	}
-	
-	@Override
-	public boolean onCreateOptionsMenu(Menu menu) {
-		MenuInflater inflater = getMenuInflater();
-		inflater.inflate(R.menu.menu, menu);
-		return true;
-	}
-    
-    @Override
-	public boolean onOptionsItemSelected(MenuItem item) {
-		switch (item.getItemId()) {
-		case R.id.acercade:
-			Intent intentResults = new Intent(this, AcercaDeActivity.class);
-        	startActivity(intentResults);
-			return true;
-//		case R.id.preferences:
-//			Intent preferences = new Intent (this, PreferencesFromXml.class);
-//			startActivity(preferences);
-//			return true;
-		default:
-			return super.onOptionsItemSelected(item);
+		//Miramos si el usuario no tiene configurado dni y contraseña.
+		if (!PreferencesService.isLoginConfigured()){
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage("Es necesario configur un dni y contraseña con la que conectarse. ¿Desea hacerlo ahora?")
+			       .setCancelable(true)
+			       .setPositiveButton("Si", new DialogInterface.OnClickListener() {
+			           public void onClick(DialogInterface dialog, int id) {
+			        	    dialog.dismiss();
+			        	   	Intent preferences = new Intent (mainContent, PreferencesFromXml.class);
+			   				startActivity(preferences);
+			           }
+			       })
+			       .setNegativeButton("No", new DialogInterface.OnClickListener() {
+			           public void onClick(DialogInterface dialog, int id) {
+			                dialog.cancel();
+			           }
+			       });
+			AlertDialog alert = builder.create();
+			alert.show();
+		}else{
+			Toast.makeText(this, "Reserva de instalaciones no implementado todavia. Habrá que esperar a la siguiente versión", Toast.LENGTH_LONG).show();
 		}
 	}
-
+	
 }
