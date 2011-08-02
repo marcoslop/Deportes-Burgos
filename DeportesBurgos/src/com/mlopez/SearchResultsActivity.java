@@ -1,6 +1,7 @@
 package com.mlopez;
 
 import java.util.List;
+import java.util.Map;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -21,11 +22,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.mlopez.beans.Hora;
+import com.mlopez.beans.InfoReserva;
 import com.mlopez.beans.Pista;
 import com.mlopez.service.DeportesService;
 import com.mlopez.service.PreferencesService;
 
-public class SearchResultsActivity extends AbstractActivity implements OnClickListener{
+public class SearchResultsActivity extends AbstractActivity {
 
 	private Activity mainContent = null;
 	
@@ -76,7 +78,7 @@ public class SearchResultsActivity extends AbstractActivity implements OnClickLi
 					
 					if (hora.isDisponible()){
 						b.setBackgroundDrawable(res.getDrawable(R.drawable.free_button));
-						b.setOnClickListener(this);
+						b.setOnClickListener(new MyOnClickButtonListener(hora));
 						//b.setTextColor(Color.rgb( 0, 255, 0));
 						//b.setBackgroundColor(Color.rgb( 0, 255, 0));
 					}else{
@@ -97,30 +99,60 @@ public class SearchResultsActivity extends AbstractActivity implements OnClickLi
 		
 	}
 
-	@Override
-	public void onClick(View arg0) {
-		//Miramos si el usuario no tiene configurado dni y contraseña.
-		if (!PreferencesService.isLoginConfigured()){
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
-			builder.setMessage("Es necesario configur un dni y contraseña con la que conectarse. ¿Desea hacerlo ahora?")
-			       .setCancelable(true)
-			       .setPositiveButton("Si", new DialogInterface.OnClickListener() {
-			           public void onClick(DialogInterface dialog, int id) {
-			        	    dialog.dismiss();
-			        	   	Intent preferences = new Intent (mainContent, PreferencesFromXml.class);
-			   				startActivity(preferences);
-			           }
-			       })
-			       .setNegativeButton("No", new DialogInterface.OnClickListener() {
-			           public void onClick(DialogInterface dialog, int id) {
-			                dialog.cancel();
-			           }
-			       });
-			AlertDialog alert = builder.create();
-			alert.show();
-		}else{
-			Toast.makeText(this, "Reserva de instalaciones no implementado todavia. Habrá que esperar a la siguiente versión", Toast.LENGTH_LONG).show();
+	public class MyOnClickButtonListener implements OnClickListener{
+
+		private Hora hora;
+		
+		public MyOnClickButtonListener(Hora hora) {
+			this.hora = hora;
 		}
+		
+		@Override
+		public void onClick(View v) {
+			//Miramos si el usuario no tiene configurado dni y contraseña.
+			if (!PreferencesService.isLoginConfigured()){
+				AlertDialog.Builder builder = new AlertDialog.Builder(mainContent);
+				builder.setMessage("Es necesario configur un dni y contraseña con la que conectarse. ¿Desea hacerlo ahora?")
+				       .setCancelable(true)
+				       .setPositiveButton("Si", new DialogInterface.OnClickListener() {
+				           public void onClick(DialogInterface dialog, int id) {
+				        	    dialog.dismiss();
+				        	   	Intent preferences = new Intent (mainContent, PreferencesFromXml.class);
+				   				startActivity(preferences);
+				           }
+				       })
+				       .setNegativeButton("No", new DialogInterface.OnClickListener() {
+				           public void onClick(DialogInterface dialog, int id) {
+				                dialog.cancel();
+				           }
+				       });
+				AlertDialog alert = builder.create();
+				alert.show();
+			}else{
+				//Toast.makeText(mainContent, "Reserva de instalaciones no implementado todavia. Habrá que esperar a la siguiente versión", Toast.LENGTH_LONG).show();
+				InfoReserva info = DeportesService.getInfoReserva(hora);
+				
+				AlertDialog.Builder builder = new AlertDialog.Builder(mainContent);
+				builder.setMessage("Importe: "+info.getImporte())
+				       .setCancelable(true)
+				       .setPositiveButton("Si", new DialogInterface.OnClickListener() {
+				           public void onClick(DialogInterface dialog, int id) {
+				        	    dialog.cancel();
+				        	   	
+				           }
+				       })
+				       .setNegativeButton("No", new DialogInterface.OnClickListener() {
+				           public void onClick(DialogInterface dialog, int id) {
+				                dialog.cancel();
+				           }
+				       });
+				AlertDialog alert = builder.create();
+				alert.show();
+			}
+		}
+		
 	}
 	
 }
+
+

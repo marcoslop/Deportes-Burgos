@@ -105,13 +105,24 @@ public class DeportesService {
 				while (horaIndex >= 0){
 					token = token.substring(horaIndex+horaDelim.length());
 					String disponibilidad = token.substring(0, token.indexOf('\"'));
+					
+					//Buscamos el id del elemento
+					String idDelim = "id=\"";
+					int idIndex = token.indexOf(idDelim);
+					token = token.substring(idIndex+idDelim.length());
+					String id = token.substring(0, token.indexOf('\"'));
+					
 					token = token.substring(token.indexOf('>')+1);
 					int nextHoraIndexOf = token.indexOf("</td>");
 					String horaString = token.substring(0, nextHoraIndexOf);
 					Hora hora = new Hora(horaString, disponibilidad);
 					hora.setFecha(fecha);
 					hora.setDeporteCode(deporteCode);
-					hora.setPosition(pista.getHoras().size()+1);
+					//El formato del id es: SASQ020010. De lo que los 8 primeros digitos es el codigo, y los dos ultimos es la posicion.
+					String idCode = id.substring(0,8);
+					String position = id.substring(8);
+					hora.setCode(idCode);
+					hora.setPosition(position);
 					pista.addHora(hora);
 					horaIndex = token.indexOf(horaDelim);
 				}

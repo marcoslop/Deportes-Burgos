@@ -6,7 +6,8 @@ public class Hora {
 	private String disp;
 	private String fecha;
 	private String deporteCode;
-	private int position;
+	private String position;
+	private String code;
 	
 	public Hora(String hora, String disp) {
 		this.hora = hora.replaceAll("&nbsp;", "");
@@ -45,11 +46,11 @@ public class Hora {
 		this.deporteCode = deporteCode;
 	}
 
-	public int getPosition() {
+	public String getPosition() {
 		return position;
 	}
 
-	public void setPosition(int position) {
+	public void setPosition(String position) {
 		this.position = position;
 	}
 
@@ -59,6 +60,14 @@ public class Hora {
 
 	public void setFecha(String fecha) {
 		this.fecha = fecha;
+	}
+
+	public String getCode() {
+		return code;
+	}
+
+	public void setCode(String code) {
+		this.code = code;
 	}
 	
 	
