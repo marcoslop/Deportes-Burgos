@@ -9,5 +9,8 @@
     <string name="searchresults">Resultado de búsqueda</string>
     <string name="acercade">Acerca de</string>
     <string name="preferences">Ajustes</string>
+    <string name="reservaOk">Reservar</string>
+    <string name="reservaCancelar">Cancelar</string>
+    
     
 </resources>

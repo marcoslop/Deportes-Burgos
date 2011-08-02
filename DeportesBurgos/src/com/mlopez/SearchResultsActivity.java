@@ -5,40 +5,51 @@ import java.util.Map;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.Dialog;
+import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Handler;
 import android.view.Menu;
 import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
+import android.widget.CheckBox;
+import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.mlopez.beans.Deporte;
 import com.mlopez.beans.Hora;
 import com.mlopez.beans.InfoReserva;
+import com.mlopez.beans.Lugar;
 import com.mlopez.beans.Pista;
 import com.mlopez.service.DeportesService;
+import com.mlopez.service.DeportesServiceException;
 import com.mlopez.service.PreferencesService;
 
 public class SearchResultsActivity extends AbstractActivity {
 
 	private Activity mainContent = null;
-	
+
+	final Handler mHandler = new Handler();
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		mainContent = this;
 		setContentView(R.layout.results);
-		
+
 		TableLayout layout = (TableLayout)findViewById(R.id.tLayout);
-		
+
 		//layout.setLayoutParams( new TableLayout.LayoutParams(4,5) );
 		//layout.setPadding(1,1,1,1);
 
@@ -53,7 +64,7 @@ public class SearchResultsActivity extends AbstractActivity {
 			tv.setText(pista.getComplejo()+"\n"+pista.getNombre());
 			tv.setPadding(5, 0, 0, 0);
 			tr.addView(tv);
-			
+
 			layout.setColumnStretchable(index, true);
 			index++;
 		}
@@ -63,7 +74,7 @@ public class SearchResultsActivity extends AbstractActivity {
 		// cantidad de horas.
 
 		Resources res = getResources();
-		
+
 		index = 0;
 		for (Hora h : pistas.get(0).getHoras()){
 			tr = new TableRow(this);
@@ -75,7 +86,7 @@ public class SearchResultsActivity extends AbstractActivity {
 					b.setText(hora.getHora());
 					b.setTextSize(12.0f);
 					b.setTextColor(Color.rgb( 0, 0, 0));
-					
+
 					if (hora.isDisponible()){
 						b.setBackgroundDrawable(res.getDrawable(R.drawable.free_button));
 						b.setOnClickListener(new MyOnClickButtonListener(hora));
@@ -96,63 +107,106 @@ public class SearchResultsActivity extends AbstractActivity {
 			index++;
 		}
 		//super.setContentView(layout);
-		
+
 	}
 
 	public class MyOnClickButtonListener implements OnClickListener{
 
 		private Hora hora;
-		
+
 		public MyOnClickButtonListener(Hora hora) {
 			this.hora = hora;
 		}
-		
+
 		@Override
 		public void onClick(View v) {
 			//Miramos si el usuario no tiene configurado dni y contraseña.
 			if (!PreferencesService.isLoginConfigured()){
 				AlertDialog.Builder builder = new AlertDialog.Builder(mainContent);
 				builder.setMessage("Es necesario configur un dni y contraseña con la que conectarse. ¿Desea hacerlo ahora?")
-				       .setCancelable(true)
-				       .setPositiveButton("Si", new DialogInterface.OnClickListener() {
-				           public void onClick(DialogInterface dialog, int id) {
-				        	    dialog.dismiss();
-				        	   	Intent preferences = new Intent (mainContent, PreferencesFromXml.class);
-				   				startActivity(preferences);
-				           }
-				       })
-				       .setNegativeButton("No", new DialogInterface.OnClickListener() {
-				           public void onClick(DialogInterface dialog, int id) {
-				                dialog.cancel();
-				           }
-				       });
+				.setCancelable(true)
+				.setPositiveButton("Si", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.dismiss();
+						Intent preferences = new Intent (mainContent, PreferencesFromXml.class);
+						startActivity(preferences);
+					}
+				})
+				.setNegativeButton("No", new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int id) {
+						dialog.cancel();
+					}
+				});
 				AlertDialog alert = builder.create();
 				alert.show();
 			}else{
-				//Toast.makeText(mainContent, "Reserva de instalaciones no implementado todavia. Habrá que esperar a la siguiente versión", Toast.LENGTH_LONG).show();
-				InfoReserva info = DeportesService.getInfoReserva(hora);
-				
-				AlertDialog.Builder builder = new AlertDialog.Builder(mainContent);
-				builder.setMessage("Importe: "+info.getImporte())
-				       .setCancelable(true)
-				       .setPositiveButton("Si", new DialogInterface.OnClickListener() {
-				           public void onClick(DialogInterface dialog, int id) {
-				        	    dialog.cancel();
-				        	   	
-				           }
-				       })
-				       .setNegativeButton("No", new DialogInterface.OnClickListener() {
-				           public void onClick(DialogInterface dialog, int id) {
-				                dialog.cancel();
-				           }
-				       });
-				AlertDialog alert = builder.create();
-				alert.show();
+				final ProgressDialog dialogLoading = ProgressDialog.show(mainContent, "", "Consultando", true);
+				new Thread() {
+					public void run() {
+						try {
+							final InfoReserva info = DeportesService.getInfoReserva(hora);
+							mHandler.post(new Runnable() {
+								public void run() {
+									final Dialog dialog = new Dialog(mainContent);
+
+									dialog.setContentView(R.layout.reserva_dialog);
+									dialog.setTitle("Reserva de instalación");
+
+									TextView text = (TextView) dialog.findViewById(R.id.textoReservaFecha);
+									text.setText("Fecha: "+hora.getFecha());
+									text = (TextView) dialog.findViewById(R.id.textoReservaComplejo);
+									text.setText(hora.getPista().getComplejo());
+									text = (TextView) dialog.findViewById(R.id.textoReservaLugar);
+									text.setText(hora.getPista().getNombre());
+									text = (TextView) dialog.findViewById(R.id.textoReservaImporte);
+									text.setText("Importe: "+info.getImporte());
+									if (info.getSuple1()!=null && !"".equals(info.getSuple1().trim()) && !"0.00".equals(info.getSuple1().trim())){
+										CheckBox checkbox = (CheckBox)dialog.findViewById(R.id.checkReservaLuz);
+										checkbox.setText(" Luz: "+info.getSuple1());
+										checkbox.setVisibility(View.VISIBLE);
+									}
+
+									Button botonReservaOk = (Button) dialog.findViewById(R.id.botonReservaOk);
+									botonReservaOk.setOnClickListener(new OnClickListener() {
+										@Override
+										public void onClick(View v) {
+											dialog.dismiss();
+											mainContent.finish();
+											Toast.makeText(mainContent, "Para finalizar la reserva habrá que esperar a la siguiente versión", Toast.LENGTH_LONG).show();
+										}
+									});
+
+									Button botonReservaCancelar = (Button) dialog.findViewById(R.id.botonReservaCancelar);
+									botonReservaCancelar.setOnClickListener(new OnClickListener() {
+										@Override
+										public void onClick(View v) {
+											dialog.dismiss();
+										}
+									});
+									dialog.show();
+								}
+							});
+						} catch (Exception e) {
+							e.printStackTrace();
+							final String errorMessage = e.getMessage();
+							mHandler.post(new Runnable() {
+						        public void run() {
+						        	Toast.makeText(mainContent, errorMessage, Toast.LENGTH_LONG).show();
+						        }
+						    });
+						}
+						dialogLoading.dismiss();
+					}
+
+				}.start();
+
 			}
-		}
+
 		
 	}
-	
+
+}
+
 }
 
 

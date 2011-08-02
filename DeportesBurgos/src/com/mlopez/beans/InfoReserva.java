@@ -2,17 +2,10 @@ package com.mlopez.beans;
 
 public class InfoReserva {
 
-	private Hora hora;
 	private String importe;
 	private String suple1;
 	
 	
-	public Hora getHora() {
-		return hora;
-	}
-	public void setHora(Hora hora) {
-		this.hora = hora;
-	}
 	public String getImporte() {
 		return importe;
 	}

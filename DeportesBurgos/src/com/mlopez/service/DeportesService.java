@@ -1,6 +1,5 @@
 package com.mlopez.service;
 
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
@@ -15,8 +14,6 @@ import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
-import android.text.method.TextKeyListener.Capitalize;
-
 import com.mlopez.beans.Deporte;
 import com.mlopez.beans.Hora;
 import com.mlopez.beans.InfoReserva;
@@ -29,12 +26,13 @@ public class DeportesService {
 
 	private static final String LOGIN_SERVLET = "validarlogin.php";
 	private static final String SEARCH_SERVLET = "generainstalaciones.php";
+	private static final String INFO_HORA = "reservainstalacion.php";
 
 	private static final String EXTERNAL_SESSION_ID = "PHPSESSID";
 
+	private static String lastLoginExternalSessionId = null;
 
-
-	public static String login () throws DeportesServiceException{
+	private static String login () throws DeportesServiceException{
 		DefaultHttpClient client = new DefaultHttpClient();
 		HttpPost post = new HttpPost(DEPORTES_HOST+LOGIN_SERVLET);
 		List<BasicNameValuePair> params = new ArrayList<BasicNameValuePair>();
@@ -105,24 +103,29 @@ public class DeportesService {
 				while (horaIndex >= 0){
 					token = token.substring(horaIndex+horaDelim.length());
 					String disponibilidad = token.substring(0, token.indexOf('\"'));
-					
-					//Buscamos el id del elemento
-					String idDelim = "id=\"";
-					int idIndex = token.indexOf(idDelim);
-					token = token.substring(idIndex+idDelim.length());
-					String id = token.substring(0, token.indexOf('\"'));
-					
+
+					String id = null;
+					//Para que el elemento tenga id, la disponibilidad debe ser diferente de azul.
+					if (!"azul".equals(disponibilidad)){
+						//Buscamos el id del elemento
+						String idDelim = "id=\"";
+						int idIndex = token.indexOf(idDelim);
+						token = token.substring(idIndex+idDelim.length());
+						id = token.substring(0, token.indexOf('\"'));
+					}
+
 					token = token.substring(token.indexOf('>')+1);
 					int nextHoraIndexOf = token.indexOf("</td>");
 					String horaString = token.substring(0, nextHoraIndexOf);
-					Hora hora = new Hora(horaString, disponibilidad);
+					Hora hora = new Hora(pista, horaString, disponibilidad);
 					hora.setFecha(fecha);
-					hora.setDeporteCode(deporteCode);
-					//El formato del id es: SASQ020010. De lo que los 8 primeros digitos es el codigo, y los dos ultimos es la posicion.
-					String idCode = id.substring(0,8);
-					String position = id.substring(8);
-					hora.setCode(idCode);
-					hora.setPosition(position);
+					if (id!=null){
+						//El formato del id es: SASQ020010. De lo que los 8 primeros digitos es el codigo, y los dos ultimos es la posicion.
+						String idCode = id.substring(0,8);
+						String position = id.substring(8);
+						hora.setCode(idCode);
+						hora.setPosition(position);
+					}
 					pista.addHora(hora);
 					horaIndex = token.indexOf(horaDelim);
 				}
@@ -153,10 +156,10 @@ public class DeportesService {
 			HttpResponse responsePOST = client.execute(post);
 			response = EntityUtils.toString(responsePOST.getEntity());
 		}catch (Throwable t){
-//			response = "<div  id=\"textoDefinible\"></div><br />" +
-//					"<table class=\"tabledatos\" align=\"center\" cellpadding=\"3\" cellspacing=\"0\" width=\"790px\"><td class=\"tddatoscab\" align=\"center\" colspan=3 style=\"padding-bottom:0px\"><img src=\"imagenes/atras.gif\" align=\"middle\" style=\"padding-bottom:0px;padding-right:300px;width:30px;cursor:pointer;visibility:hidden;\" />&nbsp;&nbsp;29/07/2011&nbsp;&nbsp;<img src=\"imagenes/adelante.gif\" align=\"middle\" style=\"padding-bottom:0px;padding-left:300px;cursor:pointer\" onclick=\"buscar2('30/07/2011')\"/></td><br />" +
-//					"Undefined index:  loginadm in  on line <b>256</b><br />" +
-//					"<tr class=\"trdatosimpar\"><td class=\"tddatos\" style=\"text-align:left;width:50px;\">29/07/11</td><td class=\"tddatos\" style=\"text-align:left;width:150px;\">PISTA SQUASH Nº 1<br><span class=\"letraazul2\">COMP. RÍO VENA</span></td><td class=\"tddatos\"><table cellpadding=0 cellspacing=0 style=\"position:relative\"><tr ><td class=\"blanco\"></td><td class=\"azul\">&nbsp;08:00&nbsp;</td><td class=\"azul\">&nbsp;09:00&nbsp;</td><td class=\"azul\">&nbsp;10:00&nbsp;</td><td class=\"azul\">&nbsp;11:00&nbsp;</td><td class=\"azul\">&nbsp;12:00&nbsp;</td><td class=\"azul\">&nbsp;13:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ01007\" >&nbsp;14:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ01008\" >&nbsp;15:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ01009\" >&nbsp;16:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ010010\" >&nbsp;17:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ010011\" >&nbsp;18:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ010012\" >&nbsp;19:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ010013\" >&nbsp;20:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ010014\" >&nbsp;21:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ010015\" >&nbsp;22:00&nbsp;</td></tr><tr></tr></table><tr class=\"trdatospar\"><td class=\"tddatos\" style=\"text-align:left;width:50px;\">29/07/11</td><td class=\"tddatos\" style=\"text-align:left;width:150px;\">PISTA SQUASH Nº 2<br><span class=\"letraazul2\">COMP. RÍO VENA</span></td><td class=\"tddatos\"><table cellpadding=0 cellspacing=0 style=\"position:relative\"><tr ><td class=\"blanco\"></td><td class=\"azul\">&nbsp;08:00&nbsp;</td><td class=\"azul\">&nbsp;09:00&nbsp;</td><td class=\"azul\">&nbsp;10:00&nbsp;</td><td class=\"azul\">&nbsp;11:00&nbsp;</td><td class=\"azul\">&nbsp;12:00&nbsp;</td><td class=\"azul\">&nbsp;13:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ02007\" >&nbsp;14:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ02008\" >&nbsp;15:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ02009\" >&nbsp;16:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ020010\" >&nbsp;17:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ020011\" >&nbsp;18:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ020012\" >&nbsp;19:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ020013\" >&nbsp;20:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ020014\" >&nbsp;21:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ020015\" >&nbsp;22:00&nbsp;</td></tr><tr></tr></table><tr class=\"trdatosimpar\"><td class=\"tddatos\" style=\"text-align:left;width:50px;\">29/07/11</td><td class=\"tddatos\" style=\"text-align:left;width:150px;\">PISTA SQUASH Nº 1<br><span class=\"letraazul2\">COMP. SAN AMARO</span></td><td class=\"tddatos\"><table cellpadding=0 cellspacing=0 style=\"position:relative\"><tr ><td class=\"blanco\"></td><td class=\"azul\">&nbsp;08:00&nbsp;</td><td class=\"azul\">&nbsp;09:00&nbsp;</td><td class=\"azul\">&nbsp;10:00&nbsp;</td><td class=\"azul\">&nbsp;11:00&nbsp;</td><td class=\"azul\">&nbsp;12:00&nbsp;</td><td class=\"azul\">&nbsp;13:00&nbsp;</td><td class=\"verde\" onmouseover=\"dentro('SASQ0100','7','29/07/2011',0)\" onmouseout=\"fuera('SASQ0100','7','29/07/2011')\" onclick=\"prereserva('SASQ0100','7','29/07/2011',0)\" id=\"SASQ01007\">&nbsp;14:00&nbsp;</td><td class=\"verde\" onmouseover=\"dentro('SASQ0100','8','29/07/2011',0)\" onmouseout=\"fuera('SASQ0100','8','29/07/2011')\" onclick=\"prereserva('SASQ0100','8','29/07/2011',0)\" id=\"SASQ01008\">&nbsp;15:00&nbsp;</td><td class=\"verde\" onmouseover=\"dentro('SASQ0100','9','29/07/2011',0)\" onmouseout=\"fuera('SASQ0100','9','29/07/2011')\" onclick=\"prereserva('SASQ0100','9','29/07/2011',0)\" id=\"SASQ01009\">&nbsp;16:00&nbsp;</td><td class=\"verde\" onmouseover=\"dentro('SASQ0100','10','29/07/2011',0)\" onmouseout=\"fuera('SASQ0100','10','29/07/2011')\" onclick=\"prereserva('SASQ0100','10','29/07/2011',0)\" id=\"SASQ010010\">&nbsp;17:00&nbsp;</td><td class=\"verde\" onmouseover=\"dentro('SASQ0100','11','29/07/2011',0)\" onmouseout=\"fuera('SASQ0100','11','29/07/2011')\" onclick=\"prereserva('SASQ0100','11','29/07/2011',0)\" id=\"SASQ010011\">&nbsp;18:00&nbsp;</td><td class=\"verde\" onmouseover=\"dentro('SASQ0100','12','29/07/2011',0)\" onmouseout=\"fuera('SASQ0100','12','29/07/2011')\" onclick=\"prereserva('SASQ0100','12','29/07/2011',0)\" id=\"SASQ010012\">&nbsp;19:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"SASQ010013\" >&nbsp;20:00&nbsp;</td><td class=\"verde\" onmouseover=\"dentro('SASQ0100','14','29/07/2011',0)\" onmouseout=\"fuera('SASQ0100','14','29/07/2011')\" onclick=\"prereserva('SASQ0100','14','29/07/2011',0)\" id=\"SASQ010014\">&nbsp;21:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"SASQ010015\" >&nbsp;22:00&nbsp;</td></tr><tr></tr></table><tr class=\"trdatospar\"><td class=\"tddatos\" style=\"text-align:left;width:50px;\">29/07/11</td><td class=\"tddatos\" style=\"text-align:left;width:150px;\">PISTA SQUASH Nº 2<br><span class=\"letraazul2\">COMP. SAN AMARO</span></td><td class=\"tddatos\"><table cellpadding=0 cellspacing=0 style=\"position:relative\"><tr ><td class=\"blanco\"></td><td class=\"azul\">&nbsp;08:00&nbsp;</td><td class=\"azul\">&nbsp;09:00&nbsp;</td><td class=\"azul\">&nbsp;10:00&nbsp;</td><td class=\"azul\">&nbsp;11:00&nbsp;</td><td class=\"azul\">&nbsp;12:00&nbsp;</td><td class=\"azul\">&nbsp;13:00&nbsp;</td><td class=\"verde\" onmouseover=\"dentro('SASQ0200','7','29/07/2011',0)\" onmouseout=\"fuera('SASQ0200','7','29/07/2011')\" onclick=\"prereserva('SASQ0200','7','29/07/2011',0)\" id=\"SASQ02007\">&nbsp;14:00&nbsp;</td><td class=\"verde\" onmouseover=\"dentro('SASQ0200','8','29/07/2011',0)\" onmouseout=\"fuera('SASQ0200','8','29/07/2011')\" onclick=\"prereserva('SASQ0200','8','29/07/2011',0)\" id=\"SASQ02008\">&nbsp;15:00&nbsp;</td><td class=\"verde\" onmouseover=\"dentro('SASQ0200','9','29/07/2011',0)\" onmouseout=\"fuera('SASQ0200','9','29/07/2011')\" onclick=\"prereserva('SASQ0200','9','29/07/2011',0)\" id=\"SASQ02009\">&nbsp;16:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"SASQ020010\" >&nbsp;17:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"SASQ020011\" >&nbsp;18:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"SASQ020012\" >&nbsp;19:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"SASQ020013\" >&nbsp;20:00&nbsp;</td><td class=\"verde\" onmouseover=\"dentro('SASQ0200','14','29/07/2011',0)\" onmouseout=\"fuera('SASQ0200','14','29/07/2011')\" onclick=\"prereserva('SASQ0200','14','29/07/2011',0)\" id=\"SASQ020014\">&nbsp;21:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"SASQ020015\" >&nbsp;22:00&nbsp;</td></tr><tr></tr></table></table><p></p>";
+			//			response = "<div  id=\"textoDefinible\"></div><br />" +
+			//					"<table class=\"tabledatos\" align=\"center\" cellpadding=\"3\" cellspacing=\"0\" width=\"790px\"><td class=\"tddatoscab\" align=\"center\" colspan=3 style=\"padding-bottom:0px\"><img src=\"imagenes/atras.gif\" align=\"middle\" style=\"padding-bottom:0px;padding-right:300px;width:30px;cursor:pointer;visibility:hidden;\" />&nbsp;&nbsp;29/07/2011&nbsp;&nbsp;<img src=\"imagenes/adelante.gif\" align=\"middle\" style=\"padding-bottom:0px;padding-left:300px;cursor:pointer\" onclick=\"buscar2('30/07/2011')\"/></td><br />" +
+			//					"Undefined index:  loginadm in  on line <b>256</b><br />" +
+			//					"<tr class=\"trdatosimpar\"><td class=\"tddatos\" style=\"text-align:left;width:50px;\">29/07/11</td><td class=\"tddatos\" style=\"text-align:left;width:150px;\">PISTA SQUASH Nº 1<br><span class=\"letraazul2\">COMP. RÍO VENA</span></td><td class=\"tddatos\"><table cellpadding=0 cellspacing=0 style=\"position:relative\"><tr ><td class=\"blanco\"></td><td class=\"azul\">&nbsp;08:00&nbsp;</td><td class=\"azul\">&nbsp;09:00&nbsp;</td><td class=\"azul\">&nbsp;10:00&nbsp;</td><td class=\"azul\">&nbsp;11:00&nbsp;</td><td class=\"azul\">&nbsp;12:00&nbsp;</td><td class=\"azul\">&nbsp;13:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ01007\" >&nbsp;14:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ01008\" >&nbsp;15:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ01009\" >&nbsp;16:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ010010\" >&nbsp;17:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ010011\" >&nbsp;18:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ010012\" >&nbsp;19:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ010013\" >&nbsp;20:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ010014\" >&nbsp;21:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ010015\" >&nbsp;22:00&nbsp;</td></tr><tr></tr></table><tr class=\"trdatospar\"><td class=\"tddatos\" style=\"text-align:left;width:50px;\">29/07/11</td><td class=\"tddatos\" style=\"text-align:left;width:150px;\">PISTA SQUASH Nº 2<br><span class=\"letraazul2\">COMP. RÍO VENA</span></td><td class=\"tddatos\"><table cellpadding=0 cellspacing=0 style=\"position:relative\"><tr ><td class=\"blanco\"></td><td class=\"azul\">&nbsp;08:00&nbsp;</td><td class=\"azul\">&nbsp;09:00&nbsp;</td><td class=\"azul\">&nbsp;10:00&nbsp;</td><td class=\"azul\">&nbsp;11:00&nbsp;</td><td class=\"azul\">&nbsp;12:00&nbsp;</td><td class=\"azul\">&nbsp;13:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ02007\" >&nbsp;14:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ02008\" >&nbsp;15:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ02009\" >&nbsp;16:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ020010\" >&nbsp;17:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ020011\" >&nbsp;18:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ020012\" >&nbsp;19:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ020013\" >&nbsp;20:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ020014\" >&nbsp;21:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"RVSQ020015\" >&nbsp;22:00&nbsp;</td></tr><tr></tr></table><tr class=\"trdatosimpar\"><td class=\"tddatos\" style=\"text-align:left;width:50px;\">29/07/11</td><td class=\"tddatos\" style=\"text-align:left;width:150px;\">PISTA SQUASH Nº 1<br><span class=\"letraazul2\">COMP. SAN AMARO</span></td><td class=\"tddatos\"><table cellpadding=0 cellspacing=0 style=\"position:relative\"><tr ><td class=\"blanco\"></td><td class=\"azul\">&nbsp;08:00&nbsp;</td><td class=\"azul\">&nbsp;09:00&nbsp;</td><td class=\"azul\">&nbsp;10:00&nbsp;</td><td class=\"azul\">&nbsp;11:00&nbsp;</td><td class=\"azul\">&nbsp;12:00&nbsp;</td><td class=\"azul\">&nbsp;13:00&nbsp;</td><td class=\"verde\" onmouseover=\"dentro('SASQ0100','7','29/07/2011',0)\" onmouseout=\"fuera('SASQ0100','7','29/07/2011')\" onclick=\"prereserva('SASQ0100','7','29/07/2011',0)\" id=\"SASQ01007\">&nbsp;14:00&nbsp;</td><td class=\"verde\" onmouseover=\"dentro('SASQ0100','8','29/07/2011',0)\" onmouseout=\"fuera('SASQ0100','8','29/07/2011')\" onclick=\"prereserva('SASQ0100','8','29/07/2011',0)\" id=\"SASQ01008\">&nbsp;15:00&nbsp;</td><td class=\"verde\" onmouseover=\"dentro('SASQ0100','9','29/07/2011',0)\" onmouseout=\"fuera('SASQ0100','9','29/07/2011')\" onclick=\"prereserva('SASQ0100','9','29/07/2011',0)\" id=\"SASQ01009\">&nbsp;16:00&nbsp;</td><td class=\"verde\" onmouseover=\"dentro('SASQ0100','10','29/07/2011',0)\" onmouseout=\"fuera('SASQ0100','10','29/07/2011')\" onclick=\"prereserva('SASQ0100','10','29/07/2011',0)\" id=\"SASQ010010\">&nbsp;17:00&nbsp;</td><td class=\"verde\" onmouseover=\"dentro('SASQ0100','11','29/07/2011',0)\" onmouseout=\"fuera('SASQ0100','11','29/07/2011')\" onclick=\"prereserva('SASQ0100','11','29/07/2011',0)\" id=\"SASQ010011\">&nbsp;18:00&nbsp;</td><td class=\"verde\" onmouseover=\"dentro('SASQ0100','12','29/07/2011',0)\" onmouseout=\"fuera('SASQ0100','12','29/07/2011')\" onclick=\"prereserva('SASQ0100','12','29/07/2011',0)\" id=\"SASQ010012\">&nbsp;19:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"SASQ010013\" >&nbsp;20:00&nbsp;</td><td class=\"verde\" onmouseover=\"dentro('SASQ0100','14','29/07/2011',0)\" onmouseout=\"fuera('SASQ0100','14','29/07/2011')\" onclick=\"prereserva('SASQ0100','14','29/07/2011',0)\" id=\"SASQ010014\">&nbsp;21:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"SASQ010015\" >&nbsp;22:00&nbsp;</td></tr><tr></tr></table><tr class=\"trdatospar\"><td class=\"tddatos\" style=\"text-align:left;width:50px;\">29/07/11</td><td class=\"tddatos\" style=\"text-align:left;width:150px;\">PISTA SQUASH Nº 2<br><span class=\"letraazul2\">COMP. SAN AMARO</span></td><td class=\"tddatos\"><table cellpadding=0 cellspacing=0 style=\"position:relative\"><tr ><td class=\"blanco\"></td><td class=\"azul\">&nbsp;08:00&nbsp;</td><td class=\"azul\">&nbsp;09:00&nbsp;</td><td class=\"azul\">&nbsp;10:00&nbsp;</td><td class=\"azul\">&nbsp;11:00&nbsp;</td><td class=\"azul\">&nbsp;12:00&nbsp;</td><td class=\"azul\">&nbsp;13:00&nbsp;</td><td class=\"verde\" onmouseover=\"dentro('SASQ0200','7','29/07/2011',0)\" onmouseout=\"fuera('SASQ0200','7','29/07/2011')\" onclick=\"prereserva('SASQ0200','7','29/07/2011',0)\" id=\"SASQ02007\">&nbsp;14:00&nbsp;</td><td class=\"verde\" onmouseover=\"dentro('SASQ0200','8','29/07/2011',0)\" onmouseout=\"fuera('SASQ0200','8','29/07/2011')\" onclick=\"prereserva('SASQ0200','8','29/07/2011',0)\" id=\"SASQ02008\">&nbsp;15:00&nbsp;</td><td class=\"verde\" onmouseover=\"dentro('SASQ0200','9','29/07/2011',0)\" onmouseout=\"fuera('SASQ0200','9','29/07/2011')\" onclick=\"prereserva('SASQ0200','9','29/07/2011',0)\" id=\"SASQ02009\">&nbsp;16:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"SASQ020010\" >&nbsp;17:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"SASQ020011\" >&nbsp;18:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"SASQ020012\" >&nbsp;19:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"SASQ020013\" >&nbsp;20:00&nbsp;</td><td class=\"verde\" onmouseover=\"dentro('SASQ0200','14','29/07/2011',0)\" onmouseout=\"fuera('SASQ0200','14','29/07/2011')\" onclick=\"prereserva('SASQ0200','14','29/07/2011',0)\" id=\"SASQ020014\">&nbsp;21:00&nbsp;</td><td class=\"rojo\" onmouseover=\"muestraUsuario(this.id);\" onmouseout=\"ocultaUsuario(this.id);\" id=\"SASQ020015\" >&nbsp;22:00&nbsp;</td></tr><tr></tr></table></table><p></p>";
 			throw new DeportesServiceException("Error al conectar con el servidor", t);
 		}
 		try{
@@ -205,9 +208,43 @@ public class DeportesService {
 		}
 		return fechas;
 	}
-	
-	public static InfoReserva getInfoReserva (Hora hora){
+
+	public static InfoReserva getInfoReserva (Hora hora) throws DeportesServiceException{
 		InfoReserva reserva = new InfoReserva();
+		DefaultHttpClient client = new DefaultHttpClient();
+		HttpPost post = new HttpPost(DEPORTES_HOST+INFO_HORA);
+		List<BasicNameValuePair> params = new ArrayList<BasicNameValuePair>();
+		params.add(new BasicNameValuePair("inst", hora.getCode()));
+		params.add(new BasicNameValuePair("posicion", hora.getPosition()));
+		params.add(new BasicNameValuePair("fecha", hora.getFecha()));
+		params.add(new BasicNameValuePair("tam", "0"));
+		params.add(new BasicNameValuePair("numaut", ""));
+		params.add(new BasicNameValuePair("apli", ""));
+		params.add(new BasicNameValuePair("tipinst", ""));
+		String cookieValue = login();
+		params.add(new BasicNameValuePair(EXTERNAL_SESSION_ID, cookieValue));
+		
+		String response = null;
+		try{
+			UrlEncodedFormEntity ent = new UrlEncodedFormEntity (params, HTTP.UTF_8);
+			post.setEntity(ent);
+			HttpResponse responsePOST = client.execute(post);
+			response = EntityUtils.toString(responsePOST.getEntity());
+		}catch (Throwable t){
+			throw new DeportesServiceException("Error obteniendo detalle de la actividad",t);
+		}
+		try{
+			String importeDelim = "<importe>";
+			String importeDelimEnd = "</importe>";
+			String importe = response.substring(response.indexOf(importeDelim)+importeDelim.length(), response.indexOf(importeDelimEnd));
+			String importeSuple1 = "<suple1>";
+			String importeSuple1End = "</suple1>";
+			String suple1 = response.substring(response.indexOf(importeSuple1)+importeSuple1.length(), response.indexOf(importeSuple1End));
+			reserva.setImporte(importe);
+			reserva.setSuple1(suple1);
+		}catch (Throwable t){
+			throw new DeportesServiceException("Error parseando respuesta del servidor en el detall de la actividad",t);
+		}
 		//POST /deporteson/reservainstalacion.php HTTP/1.1
 		//inst=SASQ0100&posicion=8&fecha=02%2F08%2F2011&tam=0&numaut=&apli=&tipinst=&nocache=0.08210459491237998
 
@@ -251,31 +288,35 @@ public class DeportesService {
 		lugares.add(ptvoMarianoGaspar);
 		Lugar ptvoPisones = new Lugar(" PI", "PTVO. PISONES");
 		lugares.add(ptvoPisones);
-		
+
 		deportes = new ArrayList<Deporte>();
+
+		Deporte deportesTodos = new Deporte("todos", "Todos");
+		deportesTodos.setLugares(lugares);
+		deportes.add(deportesTodos);
 		
 		Deporte boxeo = new Deporte(" BX", "Boxeo");
 		boxeo.addLugar(todos);
 		boxeo.addLugar(ptvoPlantio);
 		deportes.add(boxeo);
-		
+
 		Deporte escalada = new Deporte(" ES", "Escalada");
 		escalada.addLugar(todos);
 		escalada.addLugar(riovena);
 		deportes.add(escalada);
-		
+
 		Deporte esgrima = new Deporte(" SG", "Esgrima");
 		esgrima.addLugar(todos);
 		esgrima.addLugar(ptvoPlantio);
 		deportes.add(esgrima);
-		
+
 		Deporte fronton = new Deporte(" FR", "Frontón");
 		fronton.addLugar(todos);
 		fronton.addLugar(talamillo);
 		fronton.addLugar(spsf);
 		fronton.addLugar(ptvoLavaderos);
 		deportes.add(fronton);
-				
+
 		Deporte futbol = new Deporte(" FT", "Futbol");
 		futbol.addLugar(todos);
 		futbol.addLugar(esther);
@@ -283,17 +324,17 @@ public class DeportesService {
 		futbol.addLugar(futbolPlantio);
 		futbol.addLugar(futbolSedano);
 		deportes.add(futbol);
-		
+
 		Deporte gimnasia = new Deporte(" GN", "Gimnasia");
 		gimnasia.addLugar(todos);
 		gimnasia.addLugar(spsf);
 		deportes.add(gimnasia);
-		
+
 		Deporte halterofilia = new Deporte(" HT", "Halterofilia");
 		halterofilia.addLugar(todos);
 		halterofilia.addLugar(ptvoPlantio);
 		deportes.add(halterofilia);
-		
+
 		Deporte natacion = new Deporte(" NT", "Natacion");
 		natacion.addLugar(todos);
 		natacion.addLugar(plantio);
@@ -301,12 +342,12 @@ public class DeportesService {
 		natacion.addLugar(piscinaCapiscol);
 		natacion.addLugar(piscinaSanAgustin);
 		deportes.add(natacion);
-		
+
 		Deporte padel = new Deporte(" PD", "Padel");
 		padel.addLugar(todos);
 		padel.addLugar(amaro);
 		deportes.add(padel);
-		
+
 		Deporte polideportiva = new Deporte(" PO", "Polideportiva");
 		polideportiva.addLugar(todos);
 		polideportiva.addLugar(plantio);
@@ -321,7 +362,7 @@ public class DeportesService {
 		polideportiva.addLugar(ptvoMarianoGaspar);
 		polideportiva.addLugar(ptvoPisones);
 		deportes.add(polideportiva);
-		
+
 		Deporte polideportiva13 = new Deporte(" P3", "Polideportiva 1/3");
 		polideportiva13.addLugar(todos);
 		polideportiva13.addLugar(esther);
@@ -331,30 +372,30 @@ public class DeportesService {
 		polideportiva13.addLugar(ptvoMarianoGaspar);
 		polideportiva13.addLugar(ptvoPisones);
 		deportes.add(polideportiva13);
-		
+
 		Deporte polivalente = new Deporte(" PL", "Polivalente");
 		polivalente.addLugar(todos);
 		polivalente.addLugar(ptvoPisones);
 		deportes.add(polivalente);
-		
+
 		Deporte rugby = new Deporte(" RG", "Rugby");
 		rugby.addLugar(todos);
 		rugby.addLugar(amaro);
 		deportes.add(rugby);
-		
+
 		Deporte squash = new Deporte(" SQ", "Squash");
 		squash.addLugar(todos);
 		squash.addLugar(riovena);
 		squash.addLugar(amaro);
 		deportes.add(squash);
-		
+
 		Deporte tenis = new Deporte(" TN", "Tenis");
 		tenis.addLugar(todos);
 		tenis.addLugar(plantio);
 		tenis.addLugar(riovena);
 		tenis.addLugar(amaro);
 		deportes.add(tenis);
-		
+
 		Deporte tenisMesa = new Deporte(" TM", "Tenis de mesa");
 		tenisMesa.addLugar(todos);
 		tenisMesa.addLugar(plantio);

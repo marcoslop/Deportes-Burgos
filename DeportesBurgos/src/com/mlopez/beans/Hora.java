@@ -2,16 +2,17 @@ package com.mlopez.beans;
 
 public class Hora {
 
+	private Pista pista; 
 	private String hora;
 	private String disp;
 	private String fecha;
-	private String deporteCode;
 	private String position;
 	private String code;
 	
-	public Hora(String hora, String disp) {
+	public Hora(Pista pista, String hora, String disp) {
 		this.hora = hora.replaceAll("&nbsp;", "");
 		this.disp = disp;
+		this.pista = pista;
 	}
 	
 	public String getHora() {
@@ -38,14 +39,6 @@ public class Hora {
 		return !"azul".equals(disp);
 	}
 
-	public String getDeporteCode() {
-		return deporteCode;
-	}
-
-	public void setDeporteCode(String deporteCode) {
-		this.deporteCode = deporteCode;
-	}
-
 	public String getPosition() {
 		return position;
 	}
@@ -68,6 +61,14 @@ public class Hora {
 
 	public void setCode(String code) {
 		this.code = code;
+	}
+
+	public Pista getPista() {
+		return pista;
+	}
+
+	public void setPista(Pista pista) {
+		this.pista = pista;
 	}
 	
 	

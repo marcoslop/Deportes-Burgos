@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="vertical"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:id="@+id/layout_reserva_dialog"
+    android:paddingLeft="10px"
+    android:paddingRight="10px"
+    android:paddingBottom="10px"
+    >
+
+	<TextView android:id="@+id/textoReservaFecha" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/white"></TextView>
+	<TextView android:id="@+id/textoReservaComplejo" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/white"></TextView>
+	<TextView android:id="@+id/textoReservaLugar" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/white"></TextView>
+	<TextView android:id="@+id/textoReservaImporte" android:layout_width="wrap_content" android:layout_height="wrap_content" android:textColor="@color/white"></TextView>
+	<CheckBox android:id="@+id/checkReservaLuz" android:layout_width="wrap_content" android:layout_height="wrap_content" 
+	  android:text="luz" android:visibility="invisible" android:textAppearance="?android:attr/textAppearanceSmall" android:textColor="@color/white"></CheckBox>
+	
+	
+	
+		<Button android:id="@+id/botonReservaOk" android:layout_width="fill_parent" 
+			android:layout_height="wrap_content"  
+			android:text="@string/reservaOk" android:paddingTop="20px"> </Button>
+			
+		<Button android:id="@+id/botonReservaCancelar" android:layout_width="fill_parent" 
+			android:layout_height="wrap_content"  
+			android:text="@string/reservaCancelar"> </Button>
+
+	
+</LinearLayout>
