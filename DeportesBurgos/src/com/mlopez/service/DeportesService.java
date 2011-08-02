@@ -9,6 +9,7 @@ import java.util.List;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.protocol.HTTP;
@@ -32,33 +33,35 @@ public class DeportesService {
 
 
 
-	//	public static String login (String username, String password) throws LoginException, IOException{
-	//		PostMethod method = new PostMethod(DEPORTES_HOST+LOGIN_SERVLET);
-	//		method.addParameter("codigo", username);
-	//		method.addParameter("pass", password);
-	//		
-	//		HttpClient client = new HttpClient();
-	//		client.executeMethod(method);
-	//		byte[] responseBody = method.getResponseBody();
-	//		String result = new String(responseBody);
-	//		if (!result.contains("<respuesta>valido</respuesta>")){
-	//			throw new LoginException();
-	//		}
-	//		if (client.getState()!=null){
-	//			Cookie[] cookies = client.getState().getCookies();
-	//			if (cookies!=null){
-	//				for (int i = 0; i < cookies.length; i++) {
-	//					String cookieName = cookies[i].getName();
-	//					if (EXTERNAL_SESSION_ID.equals(cookieName)){
-	//						String cookieValue = cookies[i].getValue();
-	//						return cookieValue;
-	//					}
-	//				}
-	//			}
-	//		}
-	//		throw new LoginException();
-	//	}
-	//	
+	public static String login () throws DeportesServiceException{
+		DefaultHttpClient client = new DefaultHttpClient();
+		HttpPost post = new HttpPost(DEPORTES_HOST+LOGIN_SERVLET);
+		List<BasicNameValuePair> params = new ArrayList<BasicNameValuePair>();
+		params.add(new BasicNameValuePair("codigo", PreferencesService.getDni()));
+		params.add(new BasicNameValuePair("pass", PreferencesService.getPassword()));
+		String response = null;
+		try{
+			UrlEncodedFormEntity ent = new UrlEncodedFormEntity (params, HTTP.UTF_8);
+			post.setEntity(ent);
+			HttpResponse responsePOST = client.execute(post);
+			response = EntityUtils.toString(responsePOST.getEntity());
+		}catch (Throwable t){
+			throw new DeportesServiceException("Error al conectar con el servidor", t);
+		}
+		if (!response.contains("<respuesta>valido</respuesta>")){
+			throw new DeportesServiceException("dni y contraseña incorrectas");
+		}
+		List<Cookie> cookies = client.getCookieStore().getCookies();
+		for (Cookie cookie : cookies) {
+			String cookieName = cookie.getName();
+			if (EXTERNAL_SESSION_ID.equals(cookieName)){
+				String cookieValue = cookie.getValue();
+				return cookieValue;
+			}
+		}
+		throw new DeportesServiceException("No se ha recibido la cookie del servidor");
+	}
+		
 
 
 	public static List<Pista> parseResponse (String result){
@@ -125,6 +128,10 @@ public class DeportesService {
 		params.add(new BasicNameValuePair("comp", where));
 		params.add(new BasicNameValuePair("dia", day));
 		params.add(new BasicNameValuePair("tipo", "1"));
+		if (PreferencesService.isLoginConfigured()){
+			String cookieValue = login();
+			params.add(new BasicNameValuePair(EXTERNAL_SESSION_ID, cookieValue));
+		}
 		String response = null;
 		try{
 			UrlEncodedFormEntity ent = new UrlEncodedFormEntity (params, HTTP.UTF_8);
@@ -174,7 +181,11 @@ public class DeportesService {
 		List<String> fechas = new ArrayList<String>();
 		Calendar calendar = Calendar.getInstance();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-		for (int i=0;i<15;i++){
+		int numDays = 8;
+		if (PreferencesService.isLoginConfigured()){
+			numDays = 15;
+		}
+		for (int i=0;i<numDays;i++){
 			fechas.add(sdf.format(calendar.getTime()));
 			calendar.add(Calendar.DATE, 1);
 		}

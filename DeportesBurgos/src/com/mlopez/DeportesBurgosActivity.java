@@ -20,6 +20,7 @@ import com.mlopez.beans.Deporte;
 import com.mlopez.beans.Lugar;
 import com.mlopez.beans.Pista;
 import com.mlopez.service.DeportesService;
+import com.mlopez.service.PreferencesService;
 
 public class DeportesBurgosActivity extends AbstractActivity {
 	
@@ -41,6 +42,8 @@ public class DeportesBurgosActivity extends AbstractActivity {
     }
     
     private void init (){
+    	PreferencesService.setContext(this);
+    	
     	paintDeportesSpinner();
         paintLugaresSpinner(null);
         paintDiasSpinner();
