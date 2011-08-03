@@ -20,7 +20,7 @@
 	
 		<Button android:id="@+id/botonReservaOk" android:layout_width="fill_parent" 
 			android:layout_height="wrap_content"  
-			android:text="@string/reservaOk" android:paddingTop="20px"> </Button>
+			android:text="@string/reservaOk" android:layout_marginTop="30px"> </Button>
 			
 		<Button android:id="@+id/botonReservaCancelar" android:layout_width="fill_parent" 
 			android:layout_height="wrap_content"  

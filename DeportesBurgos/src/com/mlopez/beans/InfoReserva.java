@@ -4,7 +4,7 @@ public class InfoReserva {
 
 	private String importe;
 	private String suple1;
-	
+	private String sessionId;
 	
 	public String getImporte() {
 		return importe;
@@ -17,6 +17,12 @@ public class InfoReserva {
 	}
 	public void setSuple1(String suple1) {
 		this.suple1 = suple1;
+	}
+	public String getSessionId() {
+		return sessionId;
+	}
+	public void setSessionId(String sessionId) {
+		this.sessionId = sessionId;
 	}
 	
 }

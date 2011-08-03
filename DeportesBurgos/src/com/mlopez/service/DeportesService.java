@@ -5,12 +5,16 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
+import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpParams;
+import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
@@ -27,13 +31,26 @@ public class DeportesService {
 	private static final String LOGIN_SERVLET = "validarlogin.php";
 	private static final String SEARCH_SERVLET = "generainstalaciones.php";
 	private static final String INFO_HORA = "reservainstalacion.php";
+	private static final String RESERVA_HORA = "altareser.php";
 
 	private static final String EXTERNAL_SESSION_ID = "PHPSESSID";
 
-	private static String lastLoginExternalSessionId = null;
-
+	private static DefaultHttpClient client;
+	
+	private static DefaultHttpClient getHttpClient (){
+		if (client == null){
+			client = getNewHttpClient();
+		}
+		return client;
+	}
+	
+	private static DefaultHttpClient getNewHttpClient (){
+		client = new DefaultHttpClient();
+		return client;
+	}
+	
 	private static String login () throws DeportesServiceException{
-		DefaultHttpClient client = new DefaultHttpClient();
+		DefaultHttpClient client = getHttpClient ();
 		HttpPost post = new HttpPost(DEPORTES_HOST+LOGIN_SERVLET);
 		List<BasicNameValuePair> params = new ArrayList<BasicNameValuePair>();
 		params.add(new BasicNameValuePair("codigo", PreferencesService.getDni()));
@@ -138,7 +155,7 @@ public class DeportesService {
 
 	public static void searchActivities (String activity, String where, String day) throws DeportesServiceException{
 
-		DefaultHttpClient client = new DefaultHttpClient();
+		DefaultHttpClient client = getNewHttpClient ();
 		HttpPost post = new HttpPost(DEPORTES_HOST+SEARCH_SERVLET);
 		List<BasicNameValuePair> params = new ArrayList<BasicNameValuePair>();
 		params.add(new BasicNameValuePair("act", activity));
@@ -147,7 +164,7 @@ public class DeportesService {
 		params.add(new BasicNameValuePair("tipo", "1"));
 		if (PreferencesService.isLoginConfigured()){
 			String cookieValue = login();
-			params.add(new BasicNameValuePair(EXTERNAL_SESSION_ID, cookieValue));
+			//params.add(new BasicNameValuePair(EXTERNAL_SESSION_ID, cookieValue));
 		}
 		String response = null;
 		try{
@@ -209,9 +226,42 @@ public class DeportesService {
 		return fechas;
 	}
 
+	public static String reservar (InfoReserva reserva, Hora hora, boolean luz) throws DeportesServiceException{
+		//POST /deporteson/altareser.php HTTP/1.1
+		//forma=2&importe=4.40&importe2=&inst=TAFR0100&suple1=0&suple2=0&suple3=0&suple4=0&suple5=0&nocache=0.8836063221096992
+		//
+		DefaultHttpClient client = getHttpClient ();
+		HttpPost post = new HttpPost(DEPORTES_HOST+RESERVA_HORA);
+		List<BasicNameValuePair> params = new ArrayList<BasicNameValuePair>();
+		params.add(new BasicNameValuePair("forma", "2"));
+		params.add(new BasicNameValuePair("importe", reserva.getImporte()));
+		params.add(new BasicNameValuePair("importe2", ""));
+		params.add(new BasicNameValuePair("inst", hora.getCode()));
+		if (luz){
+			params.add(new BasicNameValuePair("suple1", reserva.getSuple1()));
+		}else{
+			params.add(new BasicNameValuePair("suple1", "0"));
+		}
+		params.add(new BasicNameValuePair("suple2", "0"));
+		params.add(new BasicNameValuePair("suple3", "0"));
+		params.add(new BasicNameValuePair("suple4", "0"));
+		params.add(new BasicNameValuePair("suple5", "0"));
+		
+		//params.add(new BasicNameValuePair(EXTERNAL_SESSION_ID, reserva.getSessionId()));
+		try{
+			UrlEncodedFormEntity ent = new UrlEncodedFormEntity (params, HTTP.UTF_8);
+			post.setEntity(ent);
+			HttpResponse responsePOST = client.execute(post);
+			String response = EntityUtils.toString(responsePOST.getEntity());
+			return response;
+		}catch (Throwable t){
+			throw new DeportesServiceException("Error obteniendo detalle de la actividad",t);
+		}
+	}
+	
 	public static InfoReserva getInfoReserva (Hora hora) throws DeportesServiceException{
 		InfoReserva reserva = new InfoReserva();
-		DefaultHttpClient client = new DefaultHttpClient();
+		DefaultHttpClient client = getHttpClient ();
 		HttpPost post = new HttpPost(DEPORTES_HOST+INFO_HORA);
 		List<BasicNameValuePair> params = new ArrayList<BasicNameValuePair>();
 		params.add(new BasicNameValuePair("inst", hora.getCode()));
@@ -222,7 +272,7 @@ public class DeportesService {
 		params.add(new BasicNameValuePair("apli", ""));
 		params.add(new BasicNameValuePair("tipinst", ""));
 		String cookieValue = login();
-		params.add(new BasicNameValuePair(EXTERNAL_SESSION_ID, cookieValue));
+		//params.add(new BasicNameValuePair(EXTERNAL_SESSION_ID, cookieValue));
 		
 		String response = null;
 		try{
@@ -249,6 +299,7 @@ public class DeportesService {
 		//inst=SASQ0100&posicion=8&fecha=02%2F08%2F2011&tam=0&numaut=&apli=&tipinst=&nocache=0.08210459491237998
 
 		//<respuesta><importe>3.80</importe><suple1>2.10</suple1><suple2>0.00</suple2><suple3>0.00</suple3><suple4>0.00</suple4><suple5>0.00</suple5><tope>0</tope><tipv>1</tipv><bon><b><bono>0</bono><bs1>0</bs1><bs2>0</bs2><bs3>0</bs3><bs4>0</bs4><bs5>0</bs5></b></bon></respuesta>
+		reserva.setSessionId(cookieValue);
 		return reserva;
 	}
 

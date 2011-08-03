@@ -167,14 +167,7 @@ public class SearchResultsActivity extends AbstractActivity {
 									}
 
 									Button botonReservaOk = (Button) dialog.findViewById(R.id.botonReservaOk);
-									botonReservaOk.setOnClickListener(new OnClickListener() {
-										@Override
-										public void onClick(View v) {
-											dialog.dismiss();
-											mainContent.finish();
-											Toast.makeText(mainContent, "Para finalizar la reserva habrá que esperar a la siguiente versión", Toast.LENGTH_LONG).show();
-										}
-									});
+									botonReservaOk.setOnClickListener(new ReservaClickListener(dialog, info, hora));
 
 									Button botonReservaCancelar = (Button) dialog.findViewById(R.id.botonReservaCancelar);
 									botonReservaCancelar.setOnClickListener(new OnClickListener() {
@@ -190,23 +183,67 @@ public class SearchResultsActivity extends AbstractActivity {
 							e.printStackTrace();
 							final String errorMessage = e.getMessage();
 							mHandler.post(new Runnable() {
-						        public void run() {
-						        	Toast.makeText(mainContent, errorMessage, Toast.LENGTH_LONG).show();
-						        }
-						    });
+								public void run() {
+									Toast.makeText(mainContent, errorMessage, Toast.LENGTH_LONG).show();
+								}
+							});
 						}
 						dialogLoading.dismiss();
 					}
 
 				}.start();
+			}		
+		}
+	}
+	
+	public class ReservaClickListener implements OnClickListener {
 
-			}
+		private Dialog dialog;
+		private InfoReserva reserva;
+		private Hora hora;
+		
+		public ReservaClickListener(Dialog dialog, InfoReserva reserva, Hora hora) {
+			this.dialog = dialog;
+			this.reserva = reserva;
+			this.hora = hora;
+		}
+		
+		@Override
+		public void onClick(View view) {
+			dialog.dismiss();
+			final ProgressDialog dialogReservando = ProgressDialog.show(mainContent, "", "Reservando", true);
 
+			new Thread() {
+
+				public void run() {
+					CheckBox checkbox = (CheckBox)dialog.findViewById(R.id.checkReservaLuz);
+					boolean luz = checkbox.isChecked();
+					try {
+						DeportesService.reservar(reserva, hora, luz);
+						mHandler.post(new Runnable() {
+							public void run() {
+								mainContent.finish();
+								Toast.makeText(mainContent, "Reserva realizada correctamente. Acuerdate de imprimir la reserva desde la web", Toast.LENGTH_LONG).show();
+							}
+						});
+					} catch (DeportesServiceException e) {
+						e.printStackTrace();
+						final String errorMessage = e.getMessage();
+						mHandler.post(new Runnable() {
+							public void run() {
+								Toast.makeText(mainContent, errorMessage, Toast.LENGTH_LONG).show();
+							}
+						});
+					}
+					dialogReservando.dismiss();
+				}
+
+			}.start();
+		}
 		
 	}
-
-}
-
+	
+	
 }
 
 
