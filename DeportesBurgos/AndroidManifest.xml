@@ -22,6 +22,9 @@
         
         <activity android:name=".PreferencesFromXml" android:label="@string/preferences" >
         </activity>
+        
+        <activity android:name=".ResumenReservaActivity" android:label="Reserva" >
+        </activity>
 
     </application>
     

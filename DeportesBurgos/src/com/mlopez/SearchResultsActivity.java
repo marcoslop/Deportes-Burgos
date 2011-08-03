@@ -153,7 +153,7 @@ public class SearchResultsActivity extends AbstractActivity {
 									dialog.setTitle("Reserva de instalación");
 
 									TextView text = (TextView) dialog.findViewById(R.id.textoReservaFecha);
-									text.setText("Fecha: "+hora.getFecha());
+									text.setText("Fecha: "+hora.getFecha()+" "+hora.getHora());
 									text = (TextView) dialog.findViewById(R.id.textoReservaComplejo);
 									text.setText(hora.getPista().getComplejo());
 									text = (TextView) dialog.findViewById(R.id.textoReservaLugar);
@@ -219,11 +219,14 @@ public class SearchResultsActivity extends AbstractActivity {
 					CheckBox checkbox = (CheckBox)dialog.findViewById(R.id.checkReservaLuz);
 					boolean luz = checkbox.isChecked();
 					try {
-						DeportesService.reservar(reserva, hora, luz);
+						final String html = DeportesService.reservar(reserva, hora, luz);
 						mHandler.post(new Runnable() {
 							public void run() {
-								mainContent.finish();
-								Toast.makeText(mainContent, "Reserva realizada correctamente. Acuerdate de imprimir la reserva desde la web", Toast.LENGTH_LONG).show();
+								//mainContent.finish();
+								Intent intentReserva = new Intent(mainContent, ResumenReservaActivity.class);
+								intentReserva.putExtra("reserva", html);
+					        	startActivity(intentReserva);
+					        	finish();
 							}
 						});
 					} catch (DeportesServiceException e) {
