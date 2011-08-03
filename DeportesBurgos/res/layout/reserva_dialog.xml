@@ -16,15 +16,21 @@
 	<CheckBox android:id="@+id/checkReservaLuz" android:layout_width="wrap_content" android:layout_height="wrap_content" 
 	  android:text="luz" android:visibility="invisible" android:textAppearance="?android:attr/textAppearanceSmall" android:textColor="@color/white"></CheckBox>
 	
-	
+	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:orientation="horizontal"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_marginTop="30px" 
+    >
 	
 		<Button android:id="@+id/botonReservaOk" android:layout_width="fill_parent" 
 			android:layout_height="wrap_content"  
-			android:text="@string/reservaOk" android:layout_marginTop="30px"> </Button>
+			android:text="@string/reservaOk" android:layout_weight="1"> </Button>
 			
 		<Button android:id="@+id/botonReservaCancelar" android:layout_width="fill_parent" 
 			android:layout_height="wrap_content"  
-			android:text="@string/reservaCancelar"> </Button>
+			android:text="@string/reservaCancelar" android:layout_weight="1"> </Button>
 
+	</LinearLayout>
 	
 </LinearLayout>
