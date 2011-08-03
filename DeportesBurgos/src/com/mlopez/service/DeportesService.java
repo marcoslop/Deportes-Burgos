@@ -8,6 +8,7 @@ import java.util.List;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
@@ -32,6 +33,7 @@ public class DeportesService {
 	private static final String SEARCH_SERVLET = "generainstalaciones.php";
 	private static final String INFO_HORA = "reservainstalacion.php";
 	private static final String RESERVA_HORA = "altareser.php";
+	private static final String INDEX = "index.php";
 
 	private static final String EXTERNAL_SESSION_ID = "PHPSESSID";
 
@@ -229,17 +231,27 @@ public class DeportesService {
 	public static String reservar (InfoReserva reserva, Hora hora, boolean luz) throws DeportesServiceException{
 		//POST /deporteson/altareser.php HTTP/1.1
 		//forma=2&importe=4.40&importe2=&inst=TAFR0100&suple1=0&suple2=0&suple3=0&suple4=0&suple5=0&nocache=0.8836063221096992
-		//
+		//forma=2&importe=8.60&importe2=&inst=TAFR0100&suple1=1&suple2=0&suple3=0&suple4=0&suple5=0&nocache=0.14798056660220027
 		DefaultHttpClient client = getHttpClient ();
+		
+		HttpGet get = new HttpGet(DEPORTES_HOST+INDEX);
+		try{
+			HttpResponse responsePOST = client.execute(get);
+			String response = EntityUtils.toString(responsePOST.getEntity());
+		}catch (Throwable t){
+			throw new DeportesServiceException("Error obteniendo el index necesario para realizar la reserva",t);
+		}
+		
 		HttpPost post = new HttpPost(DEPORTES_HOST+RESERVA_HORA);
 		List<BasicNameValuePair> params = new ArrayList<BasicNameValuePair>();
 		params.add(new BasicNameValuePair("forma", "2"));
-		params.add(new BasicNameValuePair("importe", reserva.getImporte()));
 		params.add(new BasicNameValuePair("importe2", ""));
 		params.add(new BasicNameValuePair("inst", hora.getCode()));
 		if (luz){
-			params.add(new BasicNameValuePair("suple1", reserva.getSuple1()));
+			params.add(new BasicNameValuePair("importe", reserva.getImporte()));
+			params.add(new BasicNameValuePair("suple1", "1"));
 		}else{
+			params.add(new BasicNameValuePair("importe", reserva.getImporte()));
 			params.add(new BasicNameValuePair("suple1", "0"));
 		}
 		params.add(new BasicNameValuePair("suple2", "0"));
