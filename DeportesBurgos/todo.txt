@@ -2,3 +2,4 @@
 - Cambiar el botón de buscar. Que sea estandar y que esté centrado más grande.
 - En el momento en que se introduzca usuario y contraseña, se añadan los 15 días a las fechas disponibles. 
 - Invocar a la web para obtener los deportes y las instalaciones.
+- Los botones del dialogo de reservar que sean horizontales y con un 50% cada uno.
