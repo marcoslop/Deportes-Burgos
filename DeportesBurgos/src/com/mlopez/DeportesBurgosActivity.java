@@ -18,7 +18,6 @@ import android.widget.Toast;
 
 import com.mlopez.beans.Deporte;
 import com.mlopez.beans.Lugar;
-import com.mlopez.beans.Pista;
 import com.mlopez.service.DeportesService;
 import com.mlopez.service.PreferencesService;
 
@@ -27,7 +26,8 @@ public class DeportesBurgosActivity extends AbstractActivity {
 	final Handler mHandler = new Handler();
 	
 	private Activity mainContent = null;
-	private List<Pista> searchResult = null;
+	
+	private boolean userConfigured = false;
 	
 	/** Called when the activity is first created. */
     @Override
@@ -38,7 +38,15 @@ public class DeportesBurgosActivity extends AbstractActivity {
         setContentView(R.layout.main);
         
         init ();
-        
+    }
+    
+    @Override
+    public void onWindowFocusChanged(boolean hasFocus) {
+    	super.onWindowFocusChanged(hasFocus);
+    	//Si el usuario no tenía configurado usuario y contraseña antes y ahora si hay que ampliar el abanico de fechas.
+    	if (!userConfigured && PreferencesService.isLoginConfigured()){
+    		paintDiasSpinner();
+    	}
     }
     
     private void init (){
@@ -79,10 +87,20 @@ public class DeportesBurgosActivity extends AbstractActivity {
     private void paintDiasSpinner (){
    	 //Pintamos todas los deportes
        Spinner spinnerDay = (Spinner) findViewById(R.id.spinnerDay);
+       //Recuperamos la posición del elemento seleccionado porque puede ser que estemos ampliando
+       // las fechas actuales. Después de ello habrá que seguir marcando la posición actual.
+       int selectedItemPosition = spinnerDay.getSelectedItemPosition();
        List<String> fechas = DeportesService.getFechas();
        ArrayAdapter<String> fechasAdapter = new ArrayAdapter<String>(this, android.R.layout.simple_spinner_item, fechas);
        fechasAdapter.setDropDownViewResource(android.R.layout.simple_spinner_dropdown_item);
        spinnerDay.setAdapter(fechasAdapter);
+       
+       if (selectedItemPosition >= 0){
+    	   spinnerDay.setSelection(selectedItemPosition);
+       }
+       if (PreferencesService.isLoginConfigured()){
+    	   userConfigured = true;
+       }
    }
     
  

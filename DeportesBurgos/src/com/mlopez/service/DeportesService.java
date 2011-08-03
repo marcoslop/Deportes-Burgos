@@ -41,13 +41,8 @@ public class DeportesService {
 	
 	private static DefaultHttpClient getHttpClient (){
 		if (client == null){
-			client = getNewHttpClient();
+			client = new DefaultHttpClient();
 		}
-		return client;
-	}
-	
-	private static DefaultHttpClient getNewHttpClient (){
-		client = new DefaultHttpClient();
 		return client;
 	}
 	
@@ -157,7 +152,7 @@ public class DeportesService {
 
 	public static void searchActivities (String activity, String where, String day) throws DeportesServiceException{
 
-		DefaultHttpClient client = getNewHttpClient ();
+		DefaultHttpClient client = getHttpClient();
 		HttpPost post = new HttpPost(DEPORTES_HOST+SEARCH_SERVLET);
 		List<BasicNameValuePair> params = new ArrayList<BasicNameValuePair>();
 		params.add(new BasicNameValuePair("act", activity));
