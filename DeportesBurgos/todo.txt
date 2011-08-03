@@ -1,3 +1,4 @@
 
 - Invocar a la web para obtener los deportes y las instalaciones.
 - Visualizar un webview con la reserva realizada.
+- Detectar al hacer una reserva si alguien la ha bloqueado mientras.
