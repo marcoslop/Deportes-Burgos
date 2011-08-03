@@ -1,4 +1,4 @@
 
-- Centrar los textos de las cabeceras
-- Meter las propiedades para usuario y contraseña.
-- Forma más sencilla de meter las instalaciones de cada deporte.
+- Cambiar el botón de buscar. Que sea estandar y que esté centrado más grande.
+- En el momento en que se introduzca usuario y contraseña, se añadan los 15 días a las fechas disponibles. 
+- Invocar a la web para obtener los deportes y las instalaciones.
