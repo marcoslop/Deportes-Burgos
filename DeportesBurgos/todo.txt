@@ -2,3 +2,8 @@
 - Invocar a la web para obtener los deportes y las instalaciones.
 - Visualizar un webview con la reserva realizada.
 - Detectar al hacer una reserva si alguien la ha bloqueado mientras.
+- Visualizar siempre los 15 días y si selecciona una de esas fechas, que se muestre un alert diciendo que 
+   es necesario tener configurado dni y contraseña.
+- Hacer página de listado de mis reservas.
+- Detectar que si se cambia usuario o contraseña que se invalide el login actual.
+- La codificación del º

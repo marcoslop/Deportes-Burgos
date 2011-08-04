@@ -41,8 +41,13 @@ public class DeportesService {
 	
 	private static DefaultHttpClient getHttpClient (){
 		if (client == null){
-			client = new DefaultHttpClient();
+			client = getNewHttpClient();
 		}
+		return client;
+	}
+	
+	private static DefaultHttpClient getNewHttpClient (){
+		client = new DefaultHttpClient();
 		return client;
 	}
 	
@@ -152,7 +157,9 @@ public class DeportesService {
 
 	public static void searchActivities (String activity, String where, String day) throws DeportesServiceException{
 
-		DefaultHttpClient client = getHttpClient();
+		//Cuando se hace una nueva busqueda se crea un cliente nuevo porque al ser estatico estaríamos utilizando siempre la
+		// misma instancia y sesion. Si el usuario cambia de dni y contraseña no se vería reflejado.
+		DefaultHttpClient client = getNewHttpClient();
 		HttpPost post = new HttpPost(DEPORTES_HOST+SEARCH_SERVLET);
 		List<BasicNameValuePair> params = new ArrayList<BasicNameValuePair>();
 		params.add(new BasicNameValuePair("act", activity));
@@ -231,8 +238,7 @@ public class DeportesService {
 		
 		HttpGet get = new HttpGet(DEPORTES_HOST+INDEX);
 		try{
-			HttpResponse responsePOST = client.execute(get);
-			String response = EntityUtils.toString(responsePOST.getEntity());
+			client.execute(get);
 		}catch (Throwable t){
 			throw new DeportesServiceException("Error obteniendo el index necesario para realizar la reserva",t);
 		}

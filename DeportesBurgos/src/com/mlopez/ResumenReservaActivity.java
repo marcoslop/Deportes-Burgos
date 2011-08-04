@@ -13,11 +13,12 @@ public class ResumenReservaActivity extends AbstractActivity{
 		setContentView(webview);
 
 		String reserva = "<html><body>"+getIntent().getStringExtra("reserva")+"</body></html>";
+		reserva = quitarSeccionImprimir(reserva);
 		webViewLoadData(webview, reserva);
 		Toast.makeText(this, "Reserva realizada correctamente. Acuerdate de imprimir la reserva desde la web", Toast.LENGTH_LONG).show();
 	}
 	
-	public void webViewLoadData(WebView web, String html) {
+	private void webViewLoadData(WebView web, String html) {
         StringBuilder buf = new StringBuilder(html.length());
         for (char c : html.toCharArray()) {
             switch (c) {
@@ -25,18 +26,19 @@ public class ResumenReservaActivity extends AbstractActivity{
               case '%':  buf.append("%25"); break;
               case '\'': buf.append("%27"); break;
               case '?':  buf.append("%3f"); break;
-              case 'á':  buf.append("%e1"); break;
-              case 'é':  buf.append("%e9"); break;
-              case 'í':  buf.append("%ed"); break;
-              case 'ó':  buf.append("%f3"); break;
-              case 'ú':  buf.append("%fa"); break;
-              case 'Á':  buf.append("%c1"); break;
-              case 'É':  buf.append("%c9"); break;
-              case 'Í':  buf.append("%cd"); break;
-              case 'Ó':  buf.append("%d3"); break;
-              case 'Ú':  buf.append("%da"); break;
-              case 'ñ':  buf.append("%f1"); break;
-              case 'Ñ':  buf.append("%d1"); break;
+              case 'á':  buf.append("&aacute;"); break;
+              case 'é':  buf.append("&eacute;"); break;
+              case 'í':  buf.append("&iacute;"); break;
+              case 'ó':  buf.append("&oacute;"); break;
+              case 'ú':  buf.append("&uacute;"); break;
+              case 'Á':  buf.append("&Aacute;"); break;
+              case 'É':  buf.append("&Eacute;"); break;
+              case 'Í':  buf.append("&Iacute;"); break;
+              case 'Ó':  buf.append("&Oacute;"); break;
+              case 'Ú':  buf.append("&Uacute;"); break;
+              case 'ñ':  buf.append("&ntilde;"); break;
+              case 'Ñ':  buf.append("&Ntilde;"); break;
+              case 'º':  buf.append(""); break;
               default:
                 buf.append(c);
                 break;
@@ -44,6 +46,22 @@ public class ResumenReservaActivity extends AbstractActivity{
         }
         web.loadData(buf.toString(), "text/html", "utf-8");
     }
+	
+	private static String quitarSeccionImprimir (String reserva){
+		String section = "<div class=\"oculto\"><center><input type=\"button\" value=\"Imprimir\" onClick=\"imprimir('imprimir')\"></center><br><p align=\"center\"><a href=\"alqInst.php?alq=1\" >Volver</a></p></div>";
+		int index = reserva.indexOf(section);
+		if (index >= 0){
+			String nuevoTexto = reserva.substring(0, index) + reserva.substring(index + section.length());
+			return nuevoTexto;			
+		}
+		return section;
+	}
+	
+	public static void main(String[] args) {
+		System.out.println(quitarSeccionImprimir("hola<div class=\"oculto\"><center><input type=\"button\" value=\"Imprimir\" onClick=\"imprimir('imprimir')\"></center><br><p align=\"center\"><a href=\"alqInst.php?alq=1\" >Volver</a></p></div>hola"));
+	}
+	
+	
 	/*
 	 * 
 	 * <center><div class="oculto"><b>Reserva Finalizada</b><br><br><br></div><div id="dos" style="text-align:center;margin-left:auto;margin-right:auto;" ><div id="imprimir"><table  class="ticket" cellspacing=0 style="margin-left:auto;margin-right:auto;border:1px solid black;">
@@ -77,7 +95,5 @@ Datos de la reserva</td>
 
 
 	 */
-	
-	//<div class="oculto"><center><input type="button" value="Imprimir" onClick="imprimir('imprimir')"></center><br><p align="center"><a href="alqInst.php?alq=1" >Volver</a></p></div>
 
 }
