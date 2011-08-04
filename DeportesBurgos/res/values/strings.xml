@@ -11,6 +11,6 @@
     <string name="preferences">Ajustes</string>
     <string name="reservaOk">Reservar</string>
     <string name="reservaCancelar">Cancelar</string>
-    
+    <string name="reservas">Mis reservas</string>
     
 </resources>

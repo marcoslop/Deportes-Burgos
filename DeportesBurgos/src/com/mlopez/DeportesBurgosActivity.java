@@ -25,7 +25,7 @@ public class DeportesBurgosActivity extends AbstractActivity {
 
 	final Handler mHandler = new Handler();
 
-	private Activity mainContent = null;
+	
 
 	private boolean userConfigured = false;
 
@@ -33,10 +33,7 @@ public class DeportesBurgosActivity extends AbstractActivity {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mainContent = this;
-
 		setContentView(R.layout.main);
-
 		init ();
 	}
 

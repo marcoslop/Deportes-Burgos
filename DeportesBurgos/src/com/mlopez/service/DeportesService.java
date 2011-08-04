@@ -4,6 +4,7 @@ import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
+import java.util.StringTokenizer;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
@@ -35,6 +36,8 @@ public class DeportesService {
 	private static final String INFO_HORA = "reservainstalacion.php";
 	private static final String RESERVA_HORA = "altareser.php";
 	private static final String INDEX = "index.php";
+	private static final String MIS_RESERVAS = "consReser.php";
+	private static final String DATO_RESERVA = "imprimirticketreserva.php";
 
 	private static final String EXTERNAL_SESSION_ID = "PHPSESSID";
 
@@ -318,6 +321,190 @@ public class DeportesService {
 		//<respuesta><importe>3.80</importe><suple1>2.10</suple1><suple2>0.00</suple2><suple3>0.00</suple3><suple4>0.00</suple4><suple5>0.00</suple5><tope>0</tope><tipv>1</tipv><bon><b><bono>0</bono><bs1>0</bs1><bs2>0</bs2><bs3>0</bs3><bs4>0</bs4><bs5>0</bs5></b></bon></respuesta>
 		reserva.setSessionId(cookieValue);
 		return reserva;
+	}
+	
+	private static List<InfoReserva> parseReservasResponse (String html){
+		
+		/*
+		    <center>
+			<div  id="divcierre" class="divflotante" style="    display:none;height:400px;
+		"><div style="text-align:center;width:100%;margin-left:auto;margin-right:auto">Lista de horas de reserva/autorizaci.n <br>(las pagadas o que no cumplen con el margen de tiempo m.nimo seg.n normativa, aparecen deshabilitadas)</div><div style="text-align:left;position:relative;width:100%;height:330px;overflow-y:auto;overflow-x:hidden" id="ventanita"></div><button onclick="anular2()" style="margin-left:auto;margin-right:auto">Anular Horas</button><button onclick="cerrarVentana()" style="margin-left:auto;margin-right:auto">Cerrar Ventana</button></div>
+			<div  id="divcierre2" class="divflotante" style="    display:none;height:200px
+		"><div style="text-align:center;width:100%;height:200px;margin-left:auto;margin-right:auto;overflow-y:scrollmargin-top:0px" id="ventanita2"></div></div>
+		<div  id="textoDefinible"></div><form action="consReser.php" method=post><br><table align="center"><tr><td><b>Introduzca fecha de inicio de la consulta:</b></td><td><b>D.a:</b></td><td><input type="text" name="desdia" value="04" size="1" maxlength="2"></td><td><b>Mes:</b></td><td><input type="text" name="desmes" value="08" size="1" maxlength="2"></td><td><b>A.o:</b></td><td><input type="text" name="desa.o" value ="2011" size="3" maxlength="4"></td><tr><td><b>Introduzca fecha de finalizaci.n de la consulta:</b></td><td><b>D.a:</b></td><td><input type="text" name="hasdia" value="19" size="1" maxlength="2"></td><td><b>Mes:</b></td><td><input type="text" name="hasmes" value="08" size="1" maxlength="2"></td><td><b>A.o:</b></td><td><input type="text" name="hasa.o" value ="2011" size="3" maxlength="4"></td></tr></table><table align="center"><tr><td colspan="2" align="center"><br><br><input type="submit" name="envio" value="Consultar" class="boton">	<button onclick="imprimir('uno')">Imprimir</button>																	
+		    </td></tr></table><div id="uno">
+		         <br><span class="TextoCabecera">Reservas entre los dias 04/08/2011 - 19/08/2011</span><br><br>
+		        <table class="tabledatos" id="tablaprincipal" align="center" cellpadding="3" cellspacing="0" width="100%">
+		            <tr class="trdatos">
+		                <td class="tddatoscab">N.MERO</td>
+						<td class="tddatoscab">Tipo</td>
+		                <td class="tddatoscab">COMPLEJO</td>
+		                <td class="tddatoscab">INSTALACI.N</td>
+
+		                <td class="tddatoscab">FECHA</td>
+		                <td class="tddatoscab">DESDE</td>
+		                <td class="tddatoscab">HASTA</td>
+		                <td class="tddatoscab">PRECIO</td>
+						<td class="tddatoscab">Acciones</td>
+				
+		            </tr><tr class="trdatosimpar" id="A619204">
+		            	<td class="tddatos">0F195691&nbsp;</td>
+		            	<td class="tddatos">A&nbsp;</td>
+		            	<td class="tddatos">COMP. JOS. LUIS TALAMILLO&nbsp;</td>
+		            	<td class="tddatos">FRONT.N N. 1&nbsp;</td>
+		            	<td class="tddatos" align="center">04/08/2011&nbsp;</td>
+		            	<td class="tddatos" align="center">17:00&nbsp;</td>
+		            	<td class="tddatos" align="center">18:00&nbsp;</td>
+		            	<td class="tddatos" align="center">4,40&nbsp;</td>
+		            	<td class="tddatos" align="center">
+		            		<button onclick="verDatos('A','0F195691');return false;" style="width:100px">Ver Datos</button><br>
+		            		<button onclick="imprimirTicketUnico(this.id)" style="width:100px;" id="619204">Imprimir</button><br>
+		            		<button style="width:100px" onclick="anular('A','619204');return false;" >Anular Hora</button><br>
+		            		<button style="width:100px" onclick="formularioAnular('A','0F195691');return false;" >Anular Total</button>
+		            </tr></table><br><div>Total a Pagar : <b>4.4 .</b></div><p></p></div></center>		</div>
+		<br><br><div style="text-align:center;" id="volver"><a href="index.php">Volver</a></div><br><br>
+
+			
+		*/
+		List<InfoReserva> reservas = new ArrayList<InfoReserva>();
+		//El separador va a ser el string <td class="tddatos"
+		String delimitador = "<td class=\"tddatos\"";
+		int index = 0;
+		int i = 0;
+		InfoReserva reserva;
+		String complejo = null;
+		String lugar = null;
+		String fecha = null;
+		String hora = null;
+		String precio = null;
+		while (index>=0){
+			index =	html.indexOf(delimitador);
+			html = html.substring(index+delimitador.length());
+			html = html.substring(html.indexOf('>')+1);
+			int nextIndexOf = html.indexOf(delimitador);
+			if (nextIndexOf<0){
+				nextIndexOf = html.length();
+			}
+			String token = html.substring(0, nextIndexOf);
+			token = token.substring(0, token.indexOf("</td>"));
+			token = token.replaceAll("&nbsp;", "");
+			
+			if (i % 9 == 2){
+				complejo = token;
+				complejo = complejo.replaceAll("PISCINA", "");
+				complejo = complejo.replaceAll("PTVO.", "");
+				complejo = complejo.replaceAll("COMP.", "");
+				complejo = complejo.replaceAll("FUTBOL", "");
+				complejo = complejo.replaceAll("FUTBOL", "");
+			}else if (i % 9 == 3){
+				lugar = token;
+			}else if (i % 9 == 4){
+				fecha = token;
+			}else if (i % 9 == 5){
+				hora = token;
+			}else if (i % 9 == 7){
+				precio = token;
+			}else if (i % 9 == 8){
+				//Zona de botones
+				
+				//Vamos a buscar el id de la reserva. Se encuentra en el siguiente formato: anular('A','619204');
+				String idDelim = "anular('A','";
+				int idStartIndex = token.indexOf(idDelim)+idDelim.length();
+				String reservaId = token.substring(idStartIndex, token.indexOf('\'',idStartIndex));
+				
+				Pista pista = new Pista();
+				pista.setComplejo(complejo.trim());
+				pista.setNombre(lugar.trim());
+				Hora h = new Hora(pista, hora, null);
+				h.setFecha(fecha);
+				reserva = new InfoReserva();
+				reserva.setIdReserva(reservaId);
+				reserva.setHora(h);
+				reserva.setImporte(precio);
+				reservas.add(reserva);
+			}
+			i++;
+		}
+		return reservas;
+	}
+	
+	public static List<InfoReserva> getMisReservas () throws DeportesServiceException{
+		if (!PreferencesService.isLoginConfigured()){
+			throw new DeportesServiceException("Es necesario tener dni y contraseña configuradas");
+		}
+		//Nos aseguramos que se haya hecho login
+		login ();
+		DefaultHttpClient client = getHttpClient ();
+		HttpGet get = new HttpGet(DEPORTES_HOST+MIS_RESERVAS);
+		String response;
+		try{
+			HttpResponse responseGET = client.execute(get);
+			response = EntityUtils.toString(responseGET.getEntity());
+		}catch (Throwable t){
+			throw new DeportesServiceException("Error obteniendo las reservas",t);
+		}
+		
+		try{
+			return parseReservasResponse(response);
+		}catch (Throwable t){
+			throw new DeportesServiceException("Error parseando la respuesta ",t);
+		}
+	}
+	
+	public static String getDatosReserva (String idReserva) throws DeportesServiceException{
+		if (!PreferencesService.isLoginConfigured()){
+			throw new DeportesServiceException("Es necesario tener dni y contraseña configuradas");
+		}
+		DefaultHttpClient client = getHttpClient ();
+		HttpGet get = new HttpGet(DEPORTES_HOST+DATO_RESERVA+"?claveO="+idReserva);
+		String response;
+		try{
+			HttpResponse responsePOST = client.execute(get);
+			response = EntityUtils.toString(responsePOST.getEntity());
+		}catch (Throwable t){
+			throw new DeportesServiceException("Error obteniendo las reservas",t);
+		}
+		try{
+			String bodyDelim = "<body onload=\"window.print()\">";
+			response = response.substring(response.indexOf(bodyDelim)+bodyDelim.length(), response.indexOf("</body>"));
+		}catch (Throwable t){
+			throw new DeportesServiceException("Error preparando el detalle de reserva para visualización",t);
+		}
+		return response;
+	}
+	
+	public static void anularReserva (String idReserva) throws DeportesServiceException{
+		
+		/*
+		 
+		 POST /deporteson/anulareserva.php HTTP/1.1
+Host: 213.0.30.212:8080
+Connection: keep-alive
+Referer: http://213.0.30.212:8080/deporteson/consReser.php
+Content-Length: 48
+Origin: http://213.0.30.212:8080
+User-Agent: Mozilla/5.0 (Windows NT 5.1) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.122 Safari/534.30
+Content-Type: application/x-www-form-urlencoded
+Accept: 
+Accept-Encoding: gzip,deflate,sdch
+Accept-Language: es-ES,es;q=0.8
+Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.3
+Cookie: PHPSESSID=p98vt3fh3mk1skqfc6ajodbl36
+
+tipo=A&numaut=620236&nocache=0.37334692664444447
+HTTP/1.1 200 OK
+Date: Thu, 04 Aug 2011 13:10:25 GMT
+Server: Microsoft-IIS/6.0
+X-Powered-By: ASP.NET
+X-Powered-By: PHP/5.2.6
+Expires: Thu, 19 Nov 1981 08:52:00 GMT
+Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0
+Pragma: no-cache
+Content-type: text/html
+Content-Length: 5
+
+		 
+		 */
 	}
 
 	private static void initDeportesYLugares (){

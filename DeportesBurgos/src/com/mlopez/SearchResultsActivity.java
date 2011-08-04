@@ -38,14 +38,11 @@ import com.mlopez.service.PreferencesService;
 
 public class SearchResultsActivity extends AbstractActivity {
 
-	private Activity mainContent = null;
-
 	final Handler mHandler = new Handler();
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		mainContent = this;
 		setContentView(R.layout.results);
 
 		TableLayout layout = (TableLayout)findViewById(R.id.tLayout);

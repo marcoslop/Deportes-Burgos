@@ -1,10 +1,16 @@
 package com.mlopez.beans;
 
-public class InfoReserva {
+import java.io.Serializable;
 
+public class InfoReserva implements Serializable{
+
+	private static final long serialVersionUID = 1323261982920358349L;
+	
 	private String importe;
 	private String suple1;
 	private String sessionId;
+	private Hora hora;
+	private String idReserva;
 	
 	public String getImporte() {
 		return importe;
@@ -23,6 +29,23 @@ public class InfoReserva {
 	}
 	public void setSessionId(String sessionId) {
 		this.sessionId = sessionId;
+	}
+	public Hora getHora() {
+		return hora;
+	}
+	public void setHora(Hora hora) {
+		this.hora = hora;
+	}
+	
+	public String getIdReserva() {
+		return idReserva;
+	}
+	public void setIdReserva(String idReserva) {
+		this.idReserva = idReserva;
+	}
+	@Override
+	public String toString() {
+		return hora.getPista().getComplejo()+"\n"+hora.getPista().getNombre()+"\n"+hora.getFecha()+" "+hora.getHora()+"\nPrecio: "+importe;
 	}
 	
 }
