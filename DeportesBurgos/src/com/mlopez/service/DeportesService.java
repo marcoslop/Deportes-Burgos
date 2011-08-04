@@ -14,6 +14,7 @@ import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.BasicHttpParams;
+import org.apache.http.params.HttpConnectionParams;
 import org.apache.http.params.HttpParams;
 import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
@@ -47,7 +48,10 @@ public class DeportesService {
 	}
 	
 	private static DefaultHttpClient getNewHttpClient (){
-		client = new DefaultHttpClient();
+		HttpParams httpParameters = new BasicHttpParams();
+	    HttpConnectionParams.setConnectionTimeout(httpParameters, 10000);
+	    HttpConnectionParams.setSoTimeout(httpParameters, 10000);
+		client = new DefaultHttpClient(httpParameters);
 		return client;
 	}
 	
