@@ -3,14 +3,17 @@ package com.mlopez;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ListActivity;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.view.ContextMenu;
 import android.view.ContextMenu.ContextMenuInfo;
 import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.AdapterView;
@@ -21,6 +24,7 @@ import android.widget.Toast;
 import com.mlopez.beans.InfoReserva;
 import com.mlopez.service.DeportesService;
 import com.mlopez.service.DeportesServiceException;
+import com.mlopez.service.PreferencesService;
 
 public class ReservasActivity extends AbstractActivity {
 
@@ -145,6 +149,23 @@ public class ReservasActivity extends AbstractActivity {
 			}.start();
 		}
 		return true;
+	}
+	
+	@Override
+	public boolean onCreateOptionsMenu(Menu menu) {
+		MenuInflater inflater = getMenuInflater();
+		inflater.inflate(R.menu.menu_reservas, menu);
+		return true;
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		switch (item.getItemId()) {
+		case R.id.actualizar:
+			doSearchReservas();
+		default:
+			return super.onOptionsItemSelected(item);
+		}
 	}
 
 }

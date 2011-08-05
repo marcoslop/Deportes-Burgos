@@ -14,7 +14,7 @@
     android:id="@+id/footerReservas"
     android:layout_width="fill_parent"
     android:layout_height="60dip"
-    android:text="Aquí se muestran las reservas realizadas. Seleccione una reserva durante un tiempo para ver las acciones disponibles"
+    android:text="Aquí se muestran las reservas realizadas. Mantenga pulsado una reserva durante un tiempo para ver las acciones disponibles"
     android:padding="4dip"
     android:background="#FF666666" 
     />

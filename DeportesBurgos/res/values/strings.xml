@@ -12,5 +12,6 @@
     <string name="reservaOk">Reservar</string>
     <string name="reservaCancelar">Cancelar</string>
     <string name="reservas">Mis reservas</string>
+    <string name="actualizar">Actualizar</string>
     
 </resources>

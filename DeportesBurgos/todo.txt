@@ -8,5 +8,4 @@
 - Detectar al hacer una reserva si alguien la ha bloqueado mientras.
 - Si vamos a perder dinero anulando que se muestre un dialogo avisando de ello.
 - Detectar que si se cambia usuario o contraseña que se invalide el login actual.
-- Desde la pantalla de Mis Reservas, la opción de cargar mis reservas tiene que desaparecer y aparecer un "Actualizar"
 - Que todas las pantallas vayan bien cambiando la orientación de vertical a horizontal
