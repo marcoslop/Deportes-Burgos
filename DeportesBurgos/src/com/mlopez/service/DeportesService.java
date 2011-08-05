@@ -41,6 +41,8 @@ public class DeportesService {
 	private static final String INDEX = "index.php";
 	private static final String MIS_RESERVAS = "consReser.php";
 	private static final String DATO_RESERVA = "imprimirticketreserva.php";
+	private static final String ANULAR_RESERVA = "anulareserva.php";
+	
 
 	private static final String EXTERNAL_SESSION_ID = "PHPSESSID";
 
@@ -487,36 +489,18 @@ public class DeportesService {
 	
 	public static void anularReserva (String idReserva) throws DeportesServiceException{
 		
-		/*
-		 
-		 POST /deporteson/anulareserva.php HTTP/1.1
-Host: 213.0.30.212:8080
-Connection: keep-alive
-Referer: http://213.0.30.212:8080/deporteson/consReser.php
-Content-Length: 48
-Origin: http://213.0.30.212:8080
-User-Agent: Mozilla/5.0 (Windows NT 5.1) AppleWebKit/534.30 (KHTML, like Gecko) Chrome/12.0.742.122 Safari/534.30
-Content-Type: application/x-www-form-urlencoded
-Accept: 
-Accept-Encoding: gzip,deflate,sdch
-Accept-Language: es-ES,es;q=0.8
-Accept-Charset: ISO-8859-1,utf-8;q=0.7,*;q=0.3
-Cookie: PHPSESSID=p98vt3fh3mk1skqfc6ajodbl36
-
-tipo=A&numaut=620236&nocache=0.37334692664444447
-HTTP/1.1 200 OK
-Date: Thu, 04 Aug 2011 13:10:25 GMT
-Server: Microsoft-IIS/6.0
-X-Powered-By: ASP.NET
-X-Powered-By: PHP/5.2.6
-Expires: Thu, 19 Nov 1981 08:52:00 GMT
-Cache-Control: no-store, no-cache, must-revalidate, post-check=0, pre-check=0
-Pragma: no-cache
-Content-type: text/html
-Content-Length: 5
-
-		 
-		 */
+		DefaultHttpClient client = getHttpClient ();
+		HttpPost post = new HttpPost(DEPORTES_HOST+ANULAR_RESERVA);
+		List<BasicNameValuePair> params = new ArrayList<BasicNameValuePair>();
+		params.add(new BasicNameValuePair("tipo", "A"));
+		params.add(new BasicNameValuePair("numaut", idReserva));
+		try{
+			UrlEncodedFormEntity ent = new UrlEncodedFormEntity (params, HTTP.UTF_8);
+			post.setEntity(ent);
+			client.execute(post);
+		}catch (Throwable t){
+			throw new DeportesServiceException("Error anulando reserva",t);
+		}
 	}
 
 	private static void initDeportesYLugares (){

@@ -32,6 +32,7 @@ public class ReservasActivity extends AbstractActivity {
 	final Handler mHandler = new Handler();
 	
 	private static final int VER_DETALLE = 0;
+	private static final int ANULAR = 1;
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
@@ -77,9 +78,12 @@ public class ReservasActivity extends AbstractActivity {
 		if (v.getId()==R.id.listReservas) {
 			AdapterView.AdapterContextMenuInfo info = (AdapterView.AdapterContextMenuInfo)menuInfo;
 			menu.setHeaderTitle("Acciones");
-			MenuItem item = menu.add(Menu.NONE, VER_DETALLE, VER_DETALLE, "Ver detalle");
 			Intent intent = new Intent();
 			intent.putExtra("reservaId", reservas.get(info.position).getIdReserva());
+			
+			MenuItem item = menu.add(Menu.NONE, VER_DETALLE, VER_DETALLE, "Ver detalle");
+			item.setIntent(intent);
+			item = menu.add(Menu.NONE, ANULAR, ANULAR, "Anular");
 			item.setIntent(intent);
 		}
 	}
@@ -99,6 +103,32 @@ public class ReservasActivity extends AbstractActivity {
 								Intent intentReserva = new Intent(mainContent, ResumenReservaActivity.class);
 								intentReserva.putExtra("reserva", htmlReserva);
 					        	startActivity(intentReserva);
+							}
+						});
+					} catch (Exception e) {
+						e.printStackTrace();
+						final String errorMessage = e.getMessage();
+						mHandler.post(new Runnable() {
+							public void run() {
+								Toast.makeText(mainContent, errorMessage, Toast.LENGTH_LONG).show();
+							}
+						});
+					}
+					dialog.dismiss();
+				}
+			}.start();
+		}else if (ANULAR == item.getItemId()){
+			final ProgressDialog dialog = ProgressDialog.show(this, "", "Anulando", true);
+			new Thread() {
+				public void run() {
+					try {
+						//Anulamos la reserva
+						String reservaId = item.getIntent().getStringExtra("reservaId");
+						DeportesService.anularReserva(reservaId);
+						mHandler.post(new Runnable() {
+							public void run() {
+								Toast.makeText(mainContent, "Reserva anulada correctamente", Toast.LENGTH_LONG).show();
+								doSearchReservas();
 							}
 						});
 					} catch (Exception e) {
