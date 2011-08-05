@@ -3,7 +3,9 @@ package com.mlopez;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -27,23 +29,12 @@ public class DeportesBurgosActivity extends AbstractActivity {
 
 	
 
-	private boolean userConfigured = false;
-
 	/** Called when the activity is first created. */
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		setContentView(R.layout.main);
 		init ();
-	}
-
-	@Override
-	public void onWindowFocusChanged(boolean hasFocus) {
-		super.onWindowFocusChanged(hasFocus);
-		//Si el usuario no tenía configurado usuario y contraseña antes y ahora si hay que ampliar el abanico de fechas.
-		if (!userConfigured && PreferencesService.isLoginConfigured()){
-			paintDiasSpinner();
-		}
 	}
 
 	private void init (){
@@ -95,9 +86,6 @@ public class DeportesBurgosActivity extends AbstractActivity {
 		if (selectedItemPosition >= 0){
 			spinnerDay.setSelection(selectedItemPosition);
 		}
-		if (PreferencesService.isLoginConfigured()){
-			userConfigured = true;
-		}
 	}
 
 
@@ -110,30 +98,51 @@ public class DeportesBurgosActivity extends AbstractActivity {
 	};
 
 	private void doSearch () {
-		final ProgressDialog dialog = ProgressDialog.show(this, "", "Buscando", true);
-		new Thread() {
-			public void run() {
-				try {
-					Spinner spinnerActivity = (Spinner) findViewById(R.id.spinnerActivity);
-					Deporte selectedDeporte = (Deporte) spinnerActivity.getSelectedItem();
-					Spinner spinnerLugar = (Spinner) findViewById(R.id.spinnerWhere);
-					Lugar selectedLugar = (Lugar) spinnerLugar.getSelectedItem();
-					Spinner spinnerDay = (Spinner) findViewById(R.id.spinnerDay);
-					String selectedDia = (String)spinnerDay.getSelectedItem();
-					DeportesService.searchActivities(selectedDeporte.getCode(), selectedLugar.getCode(), selectedDia);
-					mHandler.post(mUpdateResults);
-				} catch (Exception e) {
-					e.printStackTrace();
-					final String errorMessage = e.getMessage();
-					mHandler.post(new Runnable() {
-						public void run() {
-							Toast.makeText(mainContent, errorMessage, Toast.LENGTH_LONG).show();
-						}
-					});
+		//Primero comprobamos que si el usuario no está logeado no haga una busqueda de un día mayor de 8 dias. 
+		final Spinner spinnerDay = (Spinner) findViewById(R.id.spinnerDay);
+		if (!PreferencesService.isLoginConfigured() && spinnerDay.getSelectedItemPosition() >= 8){
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage("Para realizar búsquedas de más de 8 días es necesario configurar un dni y contraseña con la que conectarse. ¿Desea hacerlo ahora?")
+			.setCancelable(true)
+			.setPositiveButton("Si", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					dialog.dismiss();
+					Intent preferences = new Intent (mainContent, PreferencesFromXml.class);
+					startActivity(preferences);
 				}
-				dialog.dismiss();
-			}
-		}.start();
+			})
+			.setNegativeButton("No", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					dialog.cancel();
+				}
+			});
+			AlertDialog alert = builder.create();
+			alert.show();
+		}else{
+			final ProgressDialog dialog = ProgressDialog.show(this, "", "Buscando", true);		
+			new Thread() {
+				public void run() {
+					try {
+						Spinner spinnerActivity = (Spinner) findViewById(R.id.spinnerActivity);
+						Deporte selectedDeporte = (Deporte) spinnerActivity.getSelectedItem();
+						Spinner spinnerLugar = (Spinner) findViewById(R.id.spinnerWhere);
+						Lugar selectedLugar = (Lugar) spinnerLugar.getSelectedItem();
+						String selectedDia = (String)spinnerDay.getSelectedItem();
+						DeportesService.searchActivities(selectedDeporte.getCode(), selectedLugar.getCode(), selectedDia);
+						mHandler.post(mUpdateResults);
+					} catch (Exception e) {
+						e.printStackTrace();
+						final String errorMessage = e.getMessage();
+						mHandler.post(new Runnable() {
+							public void run() {
+								Toast.makeText(mainContent, errorMessage, Toast.LENGTH_LONG).show();
+							}
+						});
+					}
+					dialog.dismiss();
+				}
+			}.start();
+		}
 	}
 
 	public class DeporteItemSelectedListener implements OnItemSelectedListener {

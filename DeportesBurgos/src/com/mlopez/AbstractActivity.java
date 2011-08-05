@@ -42,7 +42,7 @@ public abstract class AbstractActivity extends Activity{
 		case R.id.reservas:
 			if (!PreferencesService.isLoginConfigured()){
 				AlertDialog.Builder builder = new AlertDialog.Builder(this);
-				builder.setMessage("Para ver las reservas es necesario configur un dni y contraseña con la que conectarse. ¿Desea hacerlo ahora?")
+				builder.setMessage("Para ver las reservas es necesario configurar un dni y contraseña con la que conectarse. ¿Desea hacerlo ahora?")
 				.setCancelable(true)
 				.setPositiveButton("Si", new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int id) {

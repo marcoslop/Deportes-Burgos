@@ -231,10 +231,7 @@ public class DeportesService {
 		List<String> fechas = new ArrayList<String>();
 		Calendar calendar = Calendar.getInstance();
 		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
-		int numDays = 8;
-		if (PreferencesService.isLoginConfigured()){
-			numDays = 15;
-		}
+		int numDays = 15;
 		for (int i=0;i<numDays;i++){
 			fechas.add(sdf.format(calendar.getTime()));
 			calendar.add(Calendar.DATE, 1);
