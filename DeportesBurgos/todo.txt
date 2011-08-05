@@ -8,7 +8,6 @@
 - Detectar al hacer una reserva si alguien la ha bloqueado mientras.
 - Visualizar siempre los 15 días y si selecciona una de esas fechas, que se muestre un alert diciendo que 
    es necesario tener configurado dni y contraseña.
-- Hacer página de listado de mis reservas.
-- Poder ir al detalle de una reserva.
-- Poder anular una reserva, Si vamos a perder dinero por hacerlo que se muestre un dialogo avisando de ello.
+- Si vamos a perder dinero anulando que se muestre un dialogo avisando de ello.
 - Detectar que si se cambia usuario o contraseña que se invalide el login actual.
+- Desde la pantalla de Mis Reservas, la opción de cargar mis reservas tiene que desaparecer y aparecer un "Actualizar"
