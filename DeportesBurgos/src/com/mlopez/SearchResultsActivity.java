@@ -223,6 +223,7 @@ public class SearchResultsActivity extends AbstractActivity {
 								Intent intentReserva = new Intent(mainContent, ResumenReservaActivity.class);
 								intentReserva.putExtra("reserva", html);
 					        	startActivity(intentReserva);
+					        	Toast.makeText(mainContent, "Reserva realizada correctamente. Acuerdate de imprimir la reserva desde la web", Toast.LENGTH_LONG).show();
 					        	finish();
 							}
 						});

@@ -15,7 +15,6 @@ public class ResumenReservaActivity extends AbstractActivity{
 		String reserva = "<html><body>"+getIntent().getStringExtra("reserva")+"</body></html>";
 		reserva = quitarSeccionImprimir(reserva);
 		webViewLoadData(webview, reserva);
-		Toast.makeText(this, "Reserva realizada correctamente. Acuerdate de imprimir la reserva desde la web", Toast.LENGTH_LONG).show();
 	}
 	
 	private void webViewLoadData(WebView web, String html) {
@@ -54,7 +53,7 @@ public class ResumenReservaActivity extends AbstractActivity{
 			String nuevoTexto = reserva.substring(0, index) + reserva.substring(index + section.length());
 			return nuevoTexto;			
 		}
-		return section;
+		return reserva;
 	}
 	
 	public static void main(String[] args) {

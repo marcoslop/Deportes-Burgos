@@ -85,18 +85,34 @@ public class ReservasActivity extends AbstractActivity {
 	}
 	
 	@Override
-	public boolean onContextItemSelected(MenuItem item) {
+	public boolean onContextItemSelected(final MenuItem item) {
 		if (VER_DETALLE == item.getItemId()){
-			//Vamos al detalle
-			String reservaId = item.getIntent().getStringExtra("reservaId");
-			try {
-				String htmlReserva = DeportesService.getDatosReserva(reservaId);
-				Intent intentReserva = new Intent(mainContent, ResumenReservaActivity.class);
-				intentReserva.putExtra("reserva", htmlReserva);
-	        	startActivity(intentReserva);
-			} catch (DeportesServiceException e) {
-				Toast.makeText(mainContent, e.getMessage(), Toast.LENGTH_LONG).show();
-			}
+			final ProgressDialog dialog = ProgressDialog.show(this, "", "Cargando detalle", true);
+			new Thread() {
+				public void run() {
+					try {
+						//Vamos al detalle
+						String reservaId = item.getIntent().getStringExtra("reservaId");
+						final String htmlReserva = DeportesService.getDatosReserva(reservaId);
+						mHandler.post(new Runnable() {
+							public void run() {
+								Intent intentReserva = new Intent(mainContent, ResumenReservaActivity.class);
+								intentReserva.putExtra("reserva", htmlReserva);
+					        	startActivity(intentReserva);
+							}
+						});
+					} catch (Exception e) {
+						e.printStackTrace();
+						final String errorMessage = e.getMessage();
+						mHandler.post(new Runnable() {
+							public void run() {
+								Toast.makeText(mainContent, errorMessage, Toast.LENGTH_LONG).show();
+							}
+						});
+					}
+					dialog.dismiss();
+				}
+			}.start();
 		}
 		return true;
 	}

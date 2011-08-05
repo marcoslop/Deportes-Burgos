@@ -3,14 +3,17 @@ package com.mlopez.service;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.StringTokenizer;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
+import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.utils.URLEncodedUtils;
 import org.apache.http.cookie.Cookie;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
@@ -386,7 +389,11 @@ public class DeportesService {
 				nextIndexOf = html.length();
 			}
 			String token = html.substring(0, nextIndexOf);
-			token = token.substring(0, token.indexOf("</td>"));
+			int endTdIndex = token.indexOf("</td>");
+			if (endTdIndex<0){
+				endTdIndex = token.length();
+			}
+			token = token.substring(0, endTdIndex);
 			token = token.replaceAll("&nbsp;", "");
 			
 			if (i % 9 == 2){
@@ -456,7 +463,12 @@ public class DeportesService {
 			throw new DeportesServiceException("Es necesario tener dni y contraseña configuradas");
 		}
 		DefaultHttpClient client = getHttpClient ();
-		HttpGet get = new HttpGet(DEPORTES_HOST+DATO_RESERVA+"?claveO="+idReserva);
+		String url = DEPORTES_HOST+DATO_RESERVA+"?";
+		List<NameValuePair> params = new LinkedList<NameValuePair>();
+		params.add(new BasicNameValuePair("claveO", idReserva));
+		String paramString = URLEncodedUtils.format(params, "utf-8");
+		url += paramString;
+		HttpGet get = new HttpGet(url);
 		String response;
 		try{
 			HttpResponse responsePOST = client.execute(get);
