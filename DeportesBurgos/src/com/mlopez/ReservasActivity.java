@@ -4,7 +4,6 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ListActivity;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -23,8 +22,6 @@ import android.widget.Toast;
 
 import com.mlopez.beans.InfoReserva;
 import com.mlopez.service.DeportesService;
-import com.mlopez.service.DeportesServiceException;
-import com.mlopez.service.PreferencesService;
 
 public class ReservasActivity extends AbstractActivity {
 
@@ -122,31 +119,52 @@ public class ReservasActivity extends AbstractActivity {
 				}
 			}.start();
 		}else if (ANULAR == item.getItemId()){
-			final ProgressDialog dialog = ProgressDialog.show(this, "", "Anulando", true);
-			new Thread() {
-				public void run() {
-					try {
-						//Anulamos la reserva
-						String reservaId = item.getIntent().getStringExtra("reservaId");
-						DeportesService.anularReserva(reservaId);
-						mHandler.post(new Runnable() {
-							public void run() {
-								Toast.makeText(mainContent, "Reserva anulada correctamente", Toast.LENGTH_LONG).show();
-								doSearchReservas();
+			//Mostramos un dialogo de confirmación de la anulación.
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setMessage("Es posible que, si la fecha de la reserva es cercana, pierda algo de dinero anulando. ¿Desea continuar?")
+			.setCancelable(true)
+			.setPositiveButton("Si", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialogConfirmacion, int id) {
+					dialogConfirmacion.dismiss();
+					
+					//Anulamos la reserva mostrando un dialogo mientras.
+					final ProgressDialog dialog = ProgressDialog.show(mainContent, "", "Anulando", true);
+					new Thread() {
+						public void run() {
+							try {
+								//Anulamos la reserva
+								String reservaId = item.getIntent().getStringExtra("reservaId");
+								DeportesService.anularReserva(reservaId);
+								mHandler.post(new Runnable() {
+									public void run() {
+										Toast.makeText(mainContent, "Reserva anulada correctamente", Toast.LENGTH_LONG).show();
+										doSearchReservas();
+									}
+								});
+							} catch (Exception e) {
+								e.printStackTrace();
+								final String errorMessage = e.getMessage();
+								mHandler.post(new Runnable() {
+									public void run() {
+										Toast.makeText(mainContent, errorMessage, Toast.LENGTH_LONG).show();
+									}
+								});
 							}
-						});
-					} catch (Exception e) {
-						e.printStackTrace();
-						final String errorMessage = e.getMessage();
-						mHandler.post(new Runnable() {
-							public void run() {
-								Toast.makeText(mainContent, errorMessage, Toast.LENGTH_LONG).show();
-							}
-						});
-					}
-					dialog.dismiss();
+							dialog.dismiss();
+						}
+					}.start();
+					
 				}
-			}.start();
+			})
+			.setNegativeButton("No", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					dialog.cancel();
+				}
+			});
+			AlertDialog alert = builder.create();
+			alert.show();
+			
+			
 		}
 		return true;
 	}

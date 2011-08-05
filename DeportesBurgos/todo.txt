@@ -6,6 +6,5 @@
 	Meterlo todo en una base de datos.
 
 - Detectar al hacer una reserva si alguien la ha bloqueado mientras.
-- Si vamos a perder dinero anulando que se muestre un dialogo avisando de ello.
 - Detectar que si se cambia usuario o contraseña que se invalide el login actual.
 - Que todas las pantallas vayan bien cambiando la orientación de vertical a horizontal

@@ -208,38 +208,57 @@ public class SearchResultsActivity extends AbstractActivity {
 		@Override
 		public void onClick(View view) {
 			dialog.dismiss();
-			final ProgressDialog dialogReservando = ProgressDialog.show(mainContent, "", "Reservando", true);
+			
+			//Mostramos un alert de confirmación de reserva.
+			AlertDialog.Builder builder = new AlertDialog.Builder(mainContent);
+			builder.setMessage("¿Desea confirmar la reserva?")
+			.setCancelable(true)
+			.setPositiveButton("Si", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialogConfirmacion, int id) {
+					dialogConfirmacion.dismiss();
+					final ProgressDialog dialogReservando = ProgressDialog.show(mainContent, "", "Reservando", true);
 
-			new Thread() {
+					new Thread() {
 
-				public void run() {
-					CheckBox checkbox = (CheckBox)dialog.findViewById(R.id.checkReservaLuz);
-					boolean luz = checkbox.isChecked();
-					try {
-						final String html = DeportesService.reservar(reserva, hora, luz);
-						mHandler.post(new Runnable() {
-							public void run() {
-								//mainContent.finish();
-								Intent intentReserva = new Intent(mainContent, ResumenReservaActivity.class);
-								intentReserva.putExtra("reserva", html);
-					        	startActivity(intentReserva);
-					        	Toast.makeText(mainContent, "Reserva realizada correctamente. Acuerdate de imprimir la reserva desde la web", Toast.LENGTH_LONG).show();
-					        	finish();
+						public void run() {
+							CheckBox checkbox = (CheckBox)dialog.findViewById(R.id.checkReservaLuz);
+							boolean luz = checkbox.isChecked();
+							try {
+								final String html = DeportesService.reservar(reserva, hora, luz);
+								mHandler.post(new Runnable() {
+									public void run() {
+										//mainContent.finish();
+										Intent intentReserva = new Intent(mainContent, ResumenReservaActivity.class);
+										intentReserva.putExtra("reserva", html);
+							        	startActivity(intentReserva);
+							        	Toast.makeText(mainContent, "Reserva realizada correctamente. Acuerdate de imprimir la reserva desde la web", Toast.LENGTH_LONG).show();
+							        	finish();
+									}
+								});
+							} catch (DeportesServiceException e) {
+								e.printStackTrace();
+								final String errorMessage = e.getMessage();
+								mHandler.post(new Runnable() {
+									public void run() {
+										Toast.makeText(mainContent, errorMessage, Toast.LENGTH_LONG).show();
+									}
+								});
 							}
-						});
-					} catch (DeportesServiceException e) {
-						e.printStackTrace();
-						final String errorMessage = e.getMessage();
-						mHandler.post(new Runnable() {
-							public void run() {
-								Toast.makeText(mainContent, errorMessage, Toast.LENGTH_LONG).show();
-							}
-						});
-					}
-					dialogReservando.dismiss();
+							dialogReservando.dismiss();
+						}
+
+					}.start();
 				}
-
-			}.start();
+			})
+			.setNegativeButton("No", new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int id) {
+					dialog.cancel();
+				}
+			});
+			AlertDialog alert = builder.create();
+			alert.show();
+			
+			
 		}
 		
 	}
