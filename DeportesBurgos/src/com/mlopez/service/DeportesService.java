@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Locale;
 import java.util.StringTokenizer;
 
 import org.apache.http.Header;
@@ -230,7 +231,7 @@ public class DeportesService {
 	public static List<String> getFechas (){
 		List<String> fechas = new ArrayList<String>();
 		Calendar calendar = Calendar.getInstance();
-		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy");
+		SimpleDateFormat sdf = new SimpleDateFormat("dd/MM/yyyy (EEEEE)", new Locale("es_ES"));
 		int numDays = 15;
 		for (int i=0;i<numDays;i++){
 			fechas.add(sdf.format(calendar.getTime()));

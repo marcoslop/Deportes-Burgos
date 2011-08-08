@@ -128,6 +128,7 @@ public class DeportesBurgosActivity extends AbstractActivity {
 						Spinner spinnerLugar = (Spinner) findViewById(R.id.spinnerWhere);
 						Lugar selectedLugar = (Lugar) spinnerLugar.getSelectedItem();
 						String selectedDia = (String)spinnerDay.getSelectedItem();
+						selectedDia = selectedDia.substring(0, selectedDia.indexOf(' ')).trim();
 						DeportesService.searchActivities(selectedDeporte.getCode(), selectedLugar.getCode(), selectedDia);
 						mHandler.post(mUpdateResults);
 					} catch (Exception e) {

@@ -1,6 +1,10 @@
 package com.mlopez.beans;
 
 import java.io.Serializable;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
+import java.util.Locale;
 
 public class InfoReserva implements Serializable{
 
@@ -45,7 +49,21 @@ public class InfoReserva implements Serializable{
 	}
 	@Override
 	public String toString() {
-		return hora.getPista().getComplejo()+"\n"+hora.getPista().getNombre()+"\n"+hora.getFecha()+" "+hora.getHora()+"\nPrecio: "+importe;
+		String fecha = hora.getFecha();
+		try {
+			SimpleDateFormat sdfOrigen = new SimpleDateFormat("dd/MM/yyyy");
+			SimpleDateFormat sdfDestino = new SimpleDateFormat("EEEEE dd/MM/yyyy", new Locale("es_ES"));
+			Date date = sdfOrigen.parse(hora.getFecha());
+			fecha = sdfDestino.format(date);
+			fecha = fecha.substring(0,1).toUpperCase() + fecha.substring(1);
+		} catch (ParseException e) {
+			e.printStackTrace();
+		}
+		
+		return hora.getPista().getComplejo()+"\n"+
+		hora.getPista().getNombre()+"\n"+
+		fecha+" "+hora.getHora()+
+		"\nPrecio: "+importe;
 	}
 	
 }

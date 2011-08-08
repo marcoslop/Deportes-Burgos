@@ -1,6 +1,10 @@
 package com.mlopez;
 
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 import java.util.Map;
 
 import android.app.Activity;
@@ -150,7 +154,17 @@ public class SearchResultsActivity extends AbstractActivity {
 									dialog.setTitle("Reserva de instalación");
 
 									TextView text = (TextView) dialog.findViewById(R.id.textoReservaFecha);
-									text.setText("Fecha: "+hora.getFecha()+" "+hora.getHora());
+									String fecha = hora.getFecha();
+									try {
+										SimpleDateFormat sdfOrigen = new SimpleDateFormat("dd/MM/yyyy");
+										SimpleDateFormat sdfDestino = new SimpleDateFormat("EEEEE dd/MM/yyyy", new Locale("es_ES"));
+										Date date = sdfOrigen.parse(hora.getFecha());
+										fecha = sdfDestino.format(date);
+										fecha = fecha.substring(0,1).toUpperCase() + fecha.substring(1);
+									} catch (ParseException e) {
+										e.printStackTrace();
+									}
+									text.setText(fecha+" "+hora.getHora());
 									text = (TextView) dialog.findViewById(R.id.textoReservaComplejo);
 									text.setText(hora.getPista().getComplejo());
 									text = (TextView) dialog.findViewById(R.id.textoReservaLugar);
