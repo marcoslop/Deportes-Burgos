@@ -23,8 +23,8 @@
             
         <EditTextPreference
                 android:key="dni"
-                android:title="DNI"
-                android:dialogTitle="Introduce el DNI" />
+                android:title="Cod/Dni"
+                android:dialogTitle="Introduce el Cod/Dni" />
                 
         <EditTextPreference
                 android:key="password"

@@ -31,10 +31,10 @@ public abstract class AbstractActivity extends Activity{
     @Override
 	public boolean onOptionsItemSelected(MenuItem item) {
 		switch (item.getItemId()) {
-		case R.id.acercade:
-			Intent intentResults = new Intent(this, AcercaDeActivity.class);
-        	startActivity(intentResults);
-			return true;
+//		case R.id.acercade:
+//			Intent intentResults = new Intent(this, AcercaDeActivity.class);
+//        	startActivity(intentResults);
+//			return true;
 		case R.id.preferences:
 			Intent preferences = new Intent (this, PreferencesFromXml.class);
 			startActivity(preferences);

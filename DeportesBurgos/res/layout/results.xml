@@ -1,6 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android" 
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads" 
      android:scrollbars="vertical" 
      android:layout_height="fill_parent" 
      android:layout_width="fill_parent">
@@ -8,15 +9,29 @@
      <HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
         android:layout_width="fill_parent" android:layout_height="fill_parent"> 
 
-	    <TableLayout
-	        xmlns:android="http://schemas.android.com/apk/res/android"
-	        android:layout_width="fill_parent"
-	        android:layout_height="fill_parent"
-	        android:stretchColumns="0,1,2"
-	        android:id="@+id/tLayout"
-	        android:scrollbars="vertical"
-	        >   
-		</TableLayout>
+		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+		xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent" android:orientation="vertical">
+
+			<com.google.ads.AdView android:id="@+id/adView"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         ads:adUnitId="a14e5b70cc2f04c"
+                         ads:adSize="BANNER" 
+                         ads:loadAdOnCreate="true"/>
+
+		    <TableLayout
+		        xmlns:android="http://schemas.android.com/apk/res/android"
+		        android:layout_width="fill_parent"
+		        android:layout_height="fill_parent"
+		        android:stretchColumns="0,1,2"
+		        android:id="@+id/tLayout"
+		        android:scrollbars="vertical"
+		        >
+			</TableLayout>
+	
+		</LinearLayout>
 	
 	</HorizontalScrollView>
 
