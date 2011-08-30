@@ -1,4 +1,4 @@
-package com.mlopez;
+package com.mlopez.deportesburgos;
 
 import java.util.List;
 
@@ -17,10 +17,11 @@ import android.widget.Button;
 import android.widget.Spinner;
 import android.widget.Toast;
 
-import com.mlopez.beans.Deporte;
-import com.mlopez.beans.Lugar;
-import com.mlopez.service.DeportesService;
-import com.mlopez.service.PreferencesService;
+import com.mlopez.deportesburgos.R;
+import com.mlopez.deportesburgos.beans.Deporte;
+import com.mlopez.deportesburgos.beans.Lugar;
+import com.mlopez.deportesburgos.service.DeportesService;
+import com.mlopez.deportesburgos.service.PreferencesService;
 
 public class DeportesBurgosActivity extends AbstractActivity {
 

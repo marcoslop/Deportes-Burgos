@@ -1,4 +1,4 @@
-package com.mlopez;
+package com.mlopez.deportesburgos;
 
 import java.util.List;
 
@@ -20,8 +20,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
-import com.mlopez.beans.InfoReserva;
-import com.mlopez.service.DeportesService;
+import com.mlopez.deportesburgos.R;
+import com.mlopez.deportesburgos.beans.InfoReserva;
+import com.mlopez.deportesburgos.service.DeportesService;
 
 public class ReservasActivity extends AbstractActivity {
 

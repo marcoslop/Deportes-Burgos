@@ -1,6 +1,7 @@
-package com.mlopez;
+package com.mlopez.deportesburgos;
 
-import com.mlopez.service.PreferencesService;
+import com.mlopez.deportesburgos.R;
+import com.mlopez.deportesburgos.service.PreferencesService;
 
 import android.app.Activity;
 import android.app.AlertDialog;

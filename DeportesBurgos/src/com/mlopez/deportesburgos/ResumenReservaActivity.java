@@ -1,4 +1,4 @@
-package com.mlopez;
+package com.mlopez.deportesburgos;
 
 import android.os.Bundle;
 import android.webkit.WebView;

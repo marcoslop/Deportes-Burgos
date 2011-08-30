@@ -1,4 +1,4 @@
-package com.mlopez.beans;
+package com.mlopez.deportesburgos.beans;
 
 public class Hora {
 

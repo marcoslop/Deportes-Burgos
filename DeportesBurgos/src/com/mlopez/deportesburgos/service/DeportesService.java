@@ -1,4 +1,4 @@
-package com.mlopez.service;
+package com.mlopez.deportesburgos.service;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -25,11 +25,11 @@ import org.apache.http.params.HttpProtocolParams;
 import org.apache.http.protocol.HTTP;
 import org.apache.http.util.EntityUtils;
 
-import com.mlopez.beans.Deporte;
-import com.mlopez.beans.Hora;
-import com.mlopez.beans.InfoReserva;
-import com.mlopez.beans.Lugar;
-import com.mlopez.beans.Pista;
+import com.mlopez.deportesburgos.beans.Deporte;
+import com.mlopez.deportesburgos.beans.Hora;
+import com.mlopez.deportesburgos.beans.InfoReserva;
+import com.mlopez.deportesburgos.beans.Lugar;
+import com.mlopez.deportesburgos.beans.Pista;
 
 public class DeportesService {
 

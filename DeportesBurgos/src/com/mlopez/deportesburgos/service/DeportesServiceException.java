@@ -1,4 +1,4 @@
-package com.mlopez.service;
+package com.mlopez.deportesburgos.service;
 
 public class DeportesServiceException extends Exception{
 

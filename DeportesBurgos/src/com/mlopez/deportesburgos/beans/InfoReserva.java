@@ -1,4 +1,4 @@
-package com.mlopez.beans;
+package com.mlopez.deportesburgos.beans;
 
 import java.io.Serializable;
 import java.text.ParseException;

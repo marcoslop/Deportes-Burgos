@@ -14,7 +14,9 @@
  * limitations under the License.
  */
 
-package com.mlopez;
+package com.mlopez.deportesburgos;
+
+import com.mlopez.deportesburgos.R;
 
 import android.os.Bundle;
 import android.preference.PreferenceActivity;

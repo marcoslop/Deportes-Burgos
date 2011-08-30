@@ -1,4 +1,4 @@
-package com.mlopez;
+package com.mlopez.deportesburgos;
 
 import android.app.Activity;
 import android.os.Bundle;

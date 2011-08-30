@@ -1,7 +1,7 @@
-package com.mlopez.service;
+package com.mlopez.deportesburgos.service;
 
 
-import com.mlopez.R;
+import com.mlopez.deportesburgos.R;
 
 import android.content.Context;
 import android.content.SharedPreferences;

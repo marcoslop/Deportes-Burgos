@@ -1,44 +1,35 @@
-package com.mlopez;
+package com.mlopez.deportesburgos;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
-import java.util.Map;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.res.Resources;
 import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Handler;
-import android.view.Menu;
-import android.view.MenuInflater;
-import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.Spinner;
 import android.widget.TableLayout;
 import android.widget.TableRow;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.mlopez.beans.Deporte;
-import com.mlopez.beans.Hora;
-import com.mlopez.beans.InfoReserva;
-import com.mlopez.beans.Lugar;
-import com.mlopez.beans.Pista;
-import com.mlopez.service.DeportesService;
-import com.mlopez.service.DeportesServiceException;
-import com.mlopez.service.PreferencesService;
+import com.mlopez.deportesburgos.beans.Hora;
+import com.mlopez.deportesburgos.beans.InfoReserva;
+import com.mlopez.deportesburgos.beans.Pista;
+import com.mlopez.deportesburgos.service.DeportesService;
+import com.mlopez.deportesburgos.service.DeportesServiceException;
+import com.mlopez.deportesburgos.service.PreferencesService;
 
 public class SearchResultsActivity extends AbstractActivity {
 
