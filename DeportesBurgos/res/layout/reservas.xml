@@ -6,12 +6,6 @@
   android:orientation="vertical"
   >
   
-  <com.google.ads.AdView android:id="@+id/adView"
-                         android:layout_width="wrap_content"
-                         android:layout_height="wrap_content"
-                         ads:adUnitId="a14e5b70cc2f04c"
-                         ads:adSize="BANNER" 
-                         ads:loadAdOnCreate="true"/>
   
   <ListView
     android:id="@+id/listReservas"
@@ -27,4 +21,10 @@
     android:padding="4dip"
     android:background="#FF666666" 
     />
+  <com.google.ads.AdView android:id="@+id/adView"
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         ads:adUnitId="a14e5b70cc2f04c"
+                         ads:adSize="BANNER" 
+                         ads:loadAdOnCreate="true"/>
 </LinearLayout>

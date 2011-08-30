@@ -1,56 +1,34 @@
 <?xml version="1.0" encoding="utf-8"?>
 
-<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-	xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads" 
-     android:scrollbars="vertical" 
-     android:layout_height="fill_parent" 
-     android:layout_width="fill_parent">
-     
-     <HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
-        android:layout_width="fill_parent" android:layout_height="fill_parent"> 
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	android:orientation="vertical">
 
-		<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
 		xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
-	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent" android:orientation="vertical">
+		android:scrollbars="vertical" android:layout_height="0px"
+    	android:layout_weight="1"
+		android:layout_width="fill_parent">
 
-			<com.google.ads.AdView android:id="@+id/adView"
-                         android:layout_width="wrap_content"
-                         android:layout_height="wrap_content"
-                         ads:adUnitId="a14e5b70cc2f04c"
-                         ads:adSize="BANNER" 
-                         ads:loadAdOnCreate="true"/>
+		<HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android"
+			android:layout_width="fill_parent" android:layout_height="fill_parent">
 
-		    <TableLayout
-		        xmlns:android="http://schemas.android.com/apk/res/android"
-		        android:layout_width="fill_parent"
-		        android:layout_height="fill_parent"
-		        android:stretchColumns="0,1,2"
-		        android:id="@+id/tLayout"
-		        android:scrollbars="vertical"
-		        >
+			<TableLayout xmlns:android="http://schemas.android.com/apk/res/android"
+				android:layout_width="fill_parent" android:layout_height="fill_parent"
+				android:stretchColumns="0,1,2" android:id="@+id/tLayout"
+				android:scrollbars="vertical">
 			</TableLayout>
-	
-		</LinearLayout>
-	
-	</HorizontalScrollView>
 
-</ScrollView>
 
-<!-- <ScrollView xmlns:android="http://schemas.android.com/apk/res/android" -->
-<!--     android:layout_width="fill_parent" android:layout_height="fill_parent" -->
-<!--     android:scrollbars="vertical"> -->
 
-<!--     <HorizontalScrollView xmlns:android="http://schemas.android.com/apk/res/android" -->
-<!--         android:layout_width="320px" android:layout_height="fill_parent"> -->
+		</HorizontalScrollView>
 
-<!-- 		<TableLayout xmlns:android="http://schemas.android.com/apk/res/android" -->
-<!--             android:id="@+id/tableLayout" android:layout_width="320px" -->
-<!--             android:layout_height="fill_parent" android:stretchColumns="1" -->
-<!--             android:background="#000000"/> -->
-		
+	</ScrollView>
 
-<!-- 	</HorizontalScrollView> -->
+	<com.google.ads.AdView android:id="@+id/adView"
+		android:layout_width="wrap_content" android:layout_height="wrap_content"
+		ads:adUnitId="a14e5b70cc2f04c" ads:adSize="BANNER"
+		ads:loadAdOnCreate="true" />
 
-<!-- </ScrollView> -->
-
+</LinearLayout>

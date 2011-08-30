@@ -1,27 +1,42 @@
 <?xml version="1.0" encoding="utf-8"?>
 
 
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
+	android:layout_width="fill_parent" android:layout_height="fill_parent"
+	android:orientation="vertical">
+
 	<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-		xmlns:ads="http://schemas.android.com/apk/lib/com.google.ads"
-	    android:layout_width="fill_parent"
-	    android:layout_height="fill_parent" android:orientation="vertical">
-	
-		<com.google.ads.AdView android:id="@+id/adView"
-                         android:layout_width="wrap_content"
-                         android:layout_height="wrap_content"
-                         ads:adUnitId="a14e5b70cc2f04c"
-                         ads:adSize="BANNER" 
-                         ads:loadAdOnCreate="true"/>
-		
-	
-		<TextView android:id="@+id/textView2" android:layout_width="wrap_content" android:text="@string/formActivity" android:textAppearance="?android:attr/textAppearanceMedium" android:layout_height="wrap_content"></TextView>
-		<Spinner android:id="@+id/spinnerActivity" android:layout_width="fill_parent" android:layout_height="wrap_content"></Spinner>
-		<TextView android:id="@+id/textView2" android:layout_width="wrap_content" android:text="@string/formComplejo" android:textAppearance="?android:attr/textAppearanceMedium" android:layout_height="wrap_content"></TextView>
-		<Spinner android:id="@+id/spinnerWhere" android:layout_width="fill_parent" android:layout_height="wrap_content"></Spinner>
-		<TextView android:id="@+id/textView2" android:layout_width="wrap_content" android:textAppearance="?android:attr/textAppearanceMedium" android:layout_height="wrap_content" android:text="@string/formDia"></TextView>
-		<Spinner android:id="@+id/spinnerDay" android:layout_width="fill_parent" android:layout_height="wrap_content"></Spinner>
-		
-		<Button android:id="@+id/buttonSearch" android:layout_height="50dp" android:text="@string/search" android:layout_gravity="center_horizontal" android:layout_marginTop="50px" android:layout_width="125dp" ></Button>
-	
+		android:layout_width="fill_parent" 
+		android:layout_height="0px"
+    	android:layout_weight="1"
+		android:orientation="vertical">
+
+		<TextView android:id="@+id/textView2" android:layout_width="wrap_content"
+			android:text="@string/formActivity" android:textAppearance="?android:attr/textAppearanceMedium"
+			android:layout_height="wrap_content"></TextView>
+		<Spinner android:id="@+id/spinnerActivity"
+			android:layout_width="fill_parent" android:layout_height="wrap_content"></Spinner>
+		<TextView android:id="@+id/textView2" android:layout_width="wrap_content"
+			android:text="@string/formComplejo" android:textAppearance="?android:attr/textAppearanceMedium"
+			android:layout_height="wrap_content"></TextView>
+		<Spinner android:id="@+id/spinnerWhere" android:layout_width="fill_parent"
+			android:layout_height="wrap_content"></Spinner>
+		<TextView android:id="@+id/textView2" android:layout_width="wrap_content"
+			android:textAppearance="?android:attr/textAppearanceMedium"
+			android:layout_height="wrap_content" android:text="@string/formDia"></TextView>
+		<Spinner android:id="@+id/spinnerDay" android:layout_width="fill_parent"
+			android:layout_height="wrap_content"></Spinner>
+
+		<Button android:id="@+id/buttonSearch" android:layout_height="50dp"
+			android:text="@string/search" android:layout_gravity="center_horizontal"
+			android:layout_marginTop="50px" android:layout_width="125dp"></Button>
+
 	</LinearLayout>
 
+	<com.google.ads.AdView android:id="@+id/adView"
+			android:layout_width="wrap_content" android:layout_height="wrap_content"
+			ads:adUnitId="a14e5b70cc2f04c" ads:adSize="BANNER"
+			ads:loadAdOnCreate="true" />
+
+</LinearLayout>
